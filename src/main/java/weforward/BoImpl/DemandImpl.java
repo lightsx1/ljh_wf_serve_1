@@ -339,5 +339,5 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         getBusinessDi().DropTagForDemand(demandId);
     }
 
-    
+
 }

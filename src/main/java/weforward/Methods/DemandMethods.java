@@ -18,6 +18,7 @@ import cn.weforward.protocol.support.datatype.FriendlyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weforward.Bo.Demand;
+import weforward.Exception.StatusException;
 import weforward.Params.DemandParams;
 import weforward.Params.DemandSearchParams;
 import weforward.Params.DemandUpdateParams;
@@ -171,7 +172,7 @@ public class DemandMethods {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "需求id"))
     @DocMethod(description = "删除需求中标签", index = 7 )
-    public String DropTagForDemand(FriendlyObject params) throws ApiException {
+    public String DropTagForDemand(FriendlyObject params) throws ApiException, StatusException {
         return demandService.dropTagForDemand(params.getString("demandId"));
     }
 

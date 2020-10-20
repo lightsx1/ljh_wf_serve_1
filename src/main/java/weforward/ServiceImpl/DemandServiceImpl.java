@@ -10,6 +10,7 @@ import cn.weforward.framework.support.Global;
 import weforward.Bo.Demand;
 import weforward.BoImpl.DemandImpl;
 import weforward.DiImpl.DemandDiImpl;
+import weforward.Exception.StatusException;
 import weforward.Service.DemandService;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public String dropTagForDemand(String demandId) {
+    public String dropTagForDemand(String demandId) throws StatusException {
         demandPersistent.get(demandId).DropTagForDemand(demandId);
         return "删除标签成功";
     }

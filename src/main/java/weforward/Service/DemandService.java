@@ -2,6 +2,7 @@ package weforward.Service;
 
 import cn.weforward.common.ResultPage;
 import weforward.Bo.Demand;
+import weforward.Exception.StatusException;
 
 import java.util.Date;
 import java.util.List;
@@ -75,6 +76,6 @@ public interface DemandService {
 
     String addTagForDemand(String demandId,String tagId);
 
-    String dropTagForDemand(String demandId);
+    String dropTagForDemand(String demandId) throws StatusException;
 
 }
