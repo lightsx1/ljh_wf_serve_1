@@ -15,7 +15,7 @@ public class TagCreateView {
     }
 
     public static TagCreateView valueOf(Tag tag) {
-        return null == tag ? null : new TagCreateView(tag);
+        return null == tag ? null :     new TagCreateView(tag);
     }
 
     @DocAttribute(description = "标签id")
@@ -24,7 +24,7 @@ public class TagCreateView {
     }
 
     @DocAttribute(description = "标签名称")
-    public String getTitle() {
+    public String getName() {
         return tag.getName();
     }
 

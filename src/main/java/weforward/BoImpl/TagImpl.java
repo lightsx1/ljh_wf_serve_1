@@ -17,12 +17,13 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     /**
      * 对应需求id
      */
-    @Resource
-    protected List<String> did;
 
     @Resource
     protected String name;
 
+    /*
+    * 标签状态，1表示正常使用，2表示删除
+    * */
     @Resource
     protected int status;
 
@@ -32,7 +33,6 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     public TagImpl(DemandDi di ,String name) {
         super(di);
         genPersistenceId("tag");
-        did = new ArrayList<>();
         this.name = name;
         this.status = 1;
         markPersistenceUpdate();
@@ -59,41 +59,10 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
         return STATUS.get(this.status);
     }
 
-    @Override
-    public List<String> getDid() {
-        return did;
-    }
-
-    @Override
-    public void addDemandToTag(String DemandId){
-        this.did.add(DemandId);
-        markPersistenceUpdate();
-    }
-
-    @Override
-    public void deleteDemandFromTag(String DemandId){
-        if(this.did.size() == 0 || did == null) {
-            return;
-        }
-        Iterator<String> iterator=did.iterator();
-        while(iterator.hasNext()){
-            if(iterator.next().equals(DemandId)){
-                iterator.remove();
-            }
-         }
-        markPersistenceUpdate();
-    }
 
     @Override
     public void deleteTag() throws StatusException {
-        if (did == null || did.size() == 0) {
-            this.status = Status_DELETE.id;
-            this.did = new ArrayList<>();
-            markPersistenceUpdate();
-        }
-        else{
-            throw new StatusException("该标签下还有需求，不能删除");
-        }
+        this.status = 2;
     }
 
 }

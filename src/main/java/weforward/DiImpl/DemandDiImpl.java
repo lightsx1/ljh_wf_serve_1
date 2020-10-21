@@ -8,8 +8,12 @@ import cn.weforward.data.log.BusinessLoggerFactory;
 import cn.weforward.data.persister.Persistent;
 import cn.weforward.data.persister.Persister;
 import cn.weforward.data.persister.PersisterFactory;
+import cn.weforward.data.search.Searcher;
+import cn.weforward.data.search.SearcherFactory;
+import weforward.Bo.Bug;
 import weforward.Bo.Demand;
 import weforward.Bo.Tag;
+import weforward.BoImpl.BugImpl;
 import weforward.BoImpl.DemandImpl;
 import weforward.BoImpl.TagImpl;
 import weforward.Di.DemandDi;
@@ -23,16 +27,22 @@ public class DemandDiImpl implements DemandDi{
     /*需求持久器*/
     protected Persister<DemandImpl> demandPersistent;
 
+
     protected Persister<TagImpl> tagPersister;
+
+
+    protected Persister<BugImpl> bugPersister;
 
     /*日志记录*/
     protected BusinessLogger m_BusinessLogger;
+
 
 
     public DemandDiImpl(PersisterFactory factory, BusinessLoggerFactory loggerFactory) {
         Factory = factory;
         demandPersistent = Factory.createPersister(DemandImpl.class,this);
         tagPersister = Factory.createPersister(TagImpl.class,this);
+        bugPersister = Factory.createPersister(BugImpl.class,this);
         m_BusinessLogger = loggerFactory.createLogger("demand_log");
     }
 
@@ -58,20 +68,22 @@ public class DemandDiImpl implements DemandDi{
     }
 
     @Override
+    public Bug getBug(UniteId id) {
+        return bugPersister.get(id);
+    }
+
+    @Override
     public void AddTagForDemand(String demandId, String tagId) {
         demandPersistent.get(demandId).setTagId(tagId);
-        tagPersister.get(tagId).addDemandToTag(demandId);
     }
 
     @Override
     public void DropTagForDemand(String demandId) throws StatusException {
         Demand demand = demandPersistent.get(demandId);
-        String tagId = demand.getTagId();
         if(demand.getTagId()==null || demand.getTagId().equals("")){
-            throw new StatusException("需求标签为空");
+            throw new StatusException("需求的标签为空，不能删除标签");
         }
         demandPersistent.get(demandId).setTagId(null);
-        tagPersister.get(tagId).deleteDemandFromTag(demandId);
     }
 
 

@@ -2,6 +2,8 @@ package weforward.Service;
 
 import cn.weforward.common.ResultPage;
 import weforward.Bo.Demand;
+import weforward.Bo.Tag;
+import weforward.BoImpl.DemandImpl;
 import weforward.Exception.StatusException;
 
 import java.util.Date;
@@ -32,7 +34,9 @@ public interface DemandService {
     /** 状态-删除 */
     int STATUS_SHANCHU = 999;
 
+    int STATUS_NORMAL = 1;
 
+    int STATUS_DELETE = 2;
 
     /**
      * @param user
@@ -40,13 +44,16 @@ public interface DemandService {
      * @param description
      * @param priority
      * @param charger
-     * @param follower
      * @param start
      * @param end
     * @return
       */
-    Demand createDemand(String user, String title, String description, int priority, List<String> charger, String follower,
+    Demand createDemand(String user, String title, String description, int priority, List<String> charger,
                         Date start, Date end);
+
+
+
+    Demand createDemand(String user, String fid,String title, String description, int priority, List<String> charger, Date start, Date end);
 
     /**
      *
@@ -55,15 +62,16 @@ public interface DemandService {
      */
     Demand getDemand(String id);
 
+
+
     Demand deleteDemand(String id);
 
     /**
      *
-     * @param merchant
      * @param keywords
      * @return
      */
-    ResultPage<Demand> searchDemands(String merchant, String keywords, int status);
+    ResultPage<Demand> searchDemands(String keywords, int status);
 
     /**
      *
@@ -76,6 +84,21 @@ public interface DemandService {
 
     String addTagForDemand(String demandId,String tagId);
 
+
     String dropTagForDemand(String demandId) throws StatusException;
+
+
+    ResultPage<DemandImpl> SearchSonDemand(String id);
+
+
+    Tag createTag(String name);
+
+    ResultPage<Tag> searchTagByKeywords(String keyword);
+
+    String deleteTag(String id) throws StatusException;
+
+    ResultPage<Demand> searchDemandByTagId(String id);
+
+    String follow(String id);
 
 }

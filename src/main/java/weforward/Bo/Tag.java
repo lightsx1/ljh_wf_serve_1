@@ -13,7 +13,17 @@ public interface Tag {
 
     NameItem Status_DELETE = NameItem.valueOf("已删除", 2);
 
-    NameItems STATUS = NameItems.valueOf(Status_NORMAL,Status_DELETE);
+    NameItems STATUS = NameItems.valueOf(Status_NORMAL, Status_DELETE);
+
+    NameItem PRIORITY_ERROR = NameItem.valueOf("功能错误", 1);
+
+    NameItem PRIORITY_EFFECT = NameItem.valueOf("影响流程", 2);
+
+    NameItem PRIORITY_NEWDEMAND = NameItem.valueOf("新需求", 3);
+
+    NameItem PRIORITY_SUGGEST = NameItem.valueOf("优化建议", 4);
+
+    NameItems PRIORITY = NameItems.valueOf(PRIORITY_ERROR, PRIORITY_EFFECT,PRIORITY_NEWDEMAND,PRIORITY_SUGGEST);
 
     UniteId getId();
 
@@ -23,12 +33,8 @@ public interface Tag {
 
     NameItem getStatus();
 
-    List<String> getDid();
 
     void deleteTag() throws StatusException;
 
-    void addDemandToTag(String DemandId);
-
-    void deleteDemandFromTag(String DemandId);
 
 }

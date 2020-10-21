@@ -1,6 +1,5 @@
 package weforward.View;
 
-import cn.weforward.common.NameItem;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 import weforward.Bo.Demand;
@@ -8,24 +7,29 @@ import weforward.Bo.Demand;
 import java.util.Date;
 import java.util.List;
 
-@DocObject(description = "需求视图")
-public class DemandView {
+@DocObject(description = "子需求视图")
+public class SonDemandView {
 
     protected Demand demand;
 
 
-    public DemandView(Demand demand) {
+    public SonDemandView(Demand demand) {
         this.demand  = demand;
     }
 
 
-    public static DemandView valueOf(Demand demand) {
-        return null == demand ? null : new DemandView(demand);
+    public static SonDemandView valueOf(Demand demand) {
+        return null == demand ? null : new SonDemandView(demand);
     }
 
-    @DocAttribute(description = "需求id")
+    @DocAttribute(description = "产品id")
     public String getId() {
         return demand.getId().getOrdinal();
+    }
+
+    @DocAttribute(description = "需求父id")
+    public String getFid() {
+        return demand.getFid();
     }
 
     @DocAttribute(description = "需求标题")
@@ -38,10 +42,6 @@ public class DemandView {
         return demand.getDescription();
     }
 
-    @DocAttribute(description = "需求创建人")
-    public String getCreator() {
-        return demand.getCreator();
-    }
 
     @DocAttribute(description = "需求负责人")
     public List<String> getCharger() {

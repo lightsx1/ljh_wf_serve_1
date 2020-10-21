@@ -4,6 +4,7 @@ import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.BusinessDi;
+import weforward.Bo.Bug;
 import weforward.Bo.Demand;
 import weforward.Bo.Tag;
 import weforward.Exception.StatusException;
@@ -11,7 +12,7 @@ import weforward.Exception.StatusException;
 public interface DemandDi extends BusinessDi{
 
     /**
-     * 获得需求标题
+     * 从持久器中获得需求
      * @param id
      * @return
      */
@@ -19,6 +20,7 @@ public interface DemandDi extends BusinessDi{
 
     Tag getTag(UniteId id);
 
+    Bug getBug(UniteId id);
 
 
     /**

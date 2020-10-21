@@ -3,6 +3,7 @@ package weforward.BoImpl;
 import cn.weforward.common.NameItem;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.persister.support.AbstractPersistent;
+import cn.weforward.framework.support.Global;
 import weforward.Bo.Demand;
 import weforward.Di.DemandDi;
 import weforward.Exception.StatusException;
@@ -19,6 +20,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     /*需求父需求Id*/
     @Resource
     protected String fid;
+
 
     /*需求标题*/
     @Resource
@@ -71,7 +73,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         super(di);
     }
 
-    public DemandImpl(DemandDi di,String user,String title, String description, int priority, List<String> charger, String follower,
+    public DemandImpl(DemandDi di,String user,String title, String description, int priority, List<String> charger,
                       Date start, Date end) {
         super(di);
         genPersistenceId(user);
@@ -80,7 +82,6 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         this.description = description;
         this.priority = PRIORITY.get(priority).id;
         this.charger = charger;
-        this.follower = follower;
         this.start = start;
         this.end = end;
         this.status = STATUS_PINGGU.id;
@@ -99,15 +100,13 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @param description
      * @param priority
      * @param charger
-     * @param follower
      * @param start
      * @param end
-     * @param creator
      * @return
      */
 
-    public DemandImpl(DemandDi di,String user,String fid, String title, String description, int priority, List<String> charger, String follower,
-                      Date start, Date end,String creator) {
+    public DemandImpl(DemandDi di,String user,String fid, String title, String description, int priority, List<String> charger,
+                      Date start, Date end) {
         super(di);
         genPersistenceId(user);
         this.fid = fid;
@@ -115,19 +114,28 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         this.description = description;
         this.priority = PRIORITY.get(priority).id;
         this.charger = charger;
-        this.follower = follower;
         this.start = start;
         this.end = end;
         this.status = STATUS_PINGGU.id;
         this.creattime = new Date(System.currentTimeMillis());
-        this.creator = creator;
+        this.creator = user;
         markPersistenceUpdate();
-        getBusinessDi().writeLog(getId(), "创建了一个新的需求", "", "");
+        getBusinessDi().writeLog(getId(), "创建了一个新的子需求", "", "");
     }
 
     @Override
     public UniteId getId() {
         return getPersistenceId();
+    }
+
+    @Override
+    public String getFid() {
+        return fid;
+    }
+
+    @Override
+    public void setFid(String fid) {
+        this.fid = fid;
     }
 
     @Override
@@ -172,8 +180,17 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public void setFollower(String follower) {
-        if(this.follower.equals(follower)) return;
+    public void follow() {
+        String follower = Global.TLS.getValue("user");
+        if (null == user) {
+            user = "admin";
+        }
+
+        if(this.follower != null) {
+            if(this.follower.equals(follower)) {
+                return;
+            }
+        }
         this.follower = follower;
         markPersistenceUpdate();
     }

@@ -25,13 +25,9 @@ public class TagSearchView {
     }
 
     @DocAttribute(description = "标签名称")
-    public String getTitle() {
+    public String getName() {
         return tag.getName();
     }
 
-    @DocAttribute(description = "标签包含的需求id")
-    public List <String> getDid() {
-        return tag.getDid();
-    }
 
 }

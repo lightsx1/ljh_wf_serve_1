@@ -20,8 +20,6 @@ public class DemandParams {
 
     protected List<String> charger;
 
-    protected String follower;
-
     protected Date start;
 
     protected Date end;
@@ -53,14 +51,6 @@ public class DemandParams {
         this.charger = charger;
     }
 
-    @DocAttribute(necessary = true, description = "需求跟进人", example = "跟进人1")
-    public String getFollower() {
-        return this.follower;
-    }
-
-    public void setFollower(String follower) {
-        this.follower = follower;
-    }
 
     @DocAttribute(necessary = true, description = "需求预计开始时间", example = "2019-11-29T00:30:00.666Z")
     public Date getStart() {
@@ -80,7 +70,7 @@ public class DemandParams {
         this.end = End;
     }
 
-    @DocAttribute(necessary = true, description = "需求优先级", example = "11")
+    @DocAttribute(necessary = true, description = "需求优先级", example = "1")
     public int getPriority(){
         return this.priority;
     }
