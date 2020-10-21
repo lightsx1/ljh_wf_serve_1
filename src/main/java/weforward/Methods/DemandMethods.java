@@ -20,7 +20,6 @@ import weforward.Params.DemandParams;
 import weforward.Params.DemandSearchParams;
 import weforward.Params.DemandUpdateParams;
 import weforward.Service.DemandService;
-import weforward.Service.TagService;
 import weforward.View.DemandView;
 
 import javax.annotation.Resource;
@@ -34,9 +33,6 @@ public class DemandMethods implements ExceptionHandler {
 
     @Resource
     protected DemandService demandService;
-
-    @Resource
-    protected TagService tagService;
 
     //session.getAttribute()
     private String getUser() {
@@ -117,7 +113,6 @@ public class DemandMethods implements ExceptionHandler {
         if (!StringUtil.isEmpty(name)) {
             demand.setTitle(name);
         }
-
 
         int priority = params.getPriority();
         if (priority == 1 || priority == 2 || priority == 3 || priority == 4) {

@@ -53,8 +53,4 @@
         <constructor-arg index="1" ref="productLoggerFactory"/>
     </bean>
 
-    <bean id="tagService" class="weforward.ServiceImpl.TagServiceImpl">
-        <constructor-arg index="0" ref="productPersisterFactory"/>
-    </bean>
-
 </beans>

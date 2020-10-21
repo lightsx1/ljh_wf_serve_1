@@ -46,12 +46,6 @@ public class DemandDiImpl implements DemandDi{
         m_BusinessLogger = loggerFactory.createLogger("demand_log");
     }
 
-    public DemandDiImpl(PersisterFactory factory) {
-        Factory = factory;
-        tagPersister = Factory.createPersister(TagImpl.class,this);
-    }
-
-
     /**
      * 根据id，从持久器中取得对应的需求
      * @param id

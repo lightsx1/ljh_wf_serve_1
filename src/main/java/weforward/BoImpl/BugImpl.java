@@ -35,25 +35,30 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     protected String creator;
 
     @Resource
+    protected String version;
+
+    @Resource
     protected Date lastTime;
+
+
 
     protected BugImpl(DemandDi di) {
         super(di);
     }
 
 
-    public BugImpl(DemandDi di,String user, String demandId, String description, int priority, int status, String dealer, Date lastTime) {
+    public BugImpl(DemandDi di,String user, String demandId, String description, int priority , String dealer,String version) {
         super(di);
-        genPersistenceId(user);
+        genPersistenceId("bug");
         this.demandId = demandId;
         this.description = description;
         this.priority = priority;
-        this.status = status;
+        this.status = STATUS_DAIXIUZHENG.id;
         this.isDealed = false;
         this.tester = null;
         this.dealer = dealer;
         this.creator = user;
-        this.lastTime = lastTime;
+        this.version = version;
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
         getBusinessDi().writeLog(getId(), "创建了一个新的BUG", "", "");
@@ -61,7 +66,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
     @Override
     public UniteId getId() {
-        return null;
+        return getPersistenceId();
     }
 
     @Override

@@ -8,8 +8,10 @@ import cn.weforward.data.log.BusinessLoggerFactory;
 import cn.weforward.data.persister.PersisterFactory;
 import cn.weforward.data.persister.ext.ConditionUtil;
 import cn.weforward.framework.support.Global;
+import weforward.Bo.Bug;
 import weforward.Bo.Demand;
 import weforward.Bo.Tag;
+import weforward.BoImpl.BugImpl;
 import weforward.BoImpl.DemandImpl;
 import weforward.BoImpl.TagImpl;
 import weforward.DiImpl.DemandDiImpl;
@@ -42,6 +44,21 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     @Override
     public Demand createDemand(String user, String fid,String title, String description, int priority, List<String> charger, Date start, Date end) {
         return new DemandImpl(this, user, fid,title, description, priority, charger, start, end);
+    }
+
+    @Override
+    public Bug createBug(String user, String demandId, String description, int priority , String dealer , String version){
+        return new BugImpl(this,user,demandId,description,priority,dealer,version);
+    }
+
+    @Override
+    public Tag createTag(String name) {
+        return new TagImpl(this,name);
+    }
+
+    @Override
+    public Bug getBug(String id) {
+        return bugPersister.get(id);
     }
 
     @Override
@@ -105,10 +122,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         return rp;
     }
 
-    @Override
-    public Tag createTag(String name) {
-        return new TagImpl(this,name);
-    }
+
 
 
     @Override
@@ -171,6 +185,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
 
+
     private static boolean isMatch(Demand demand, String keywords) {
         if (null == demand || demand.getStatus().id==STATUS_SHANCHU) {
             return false;
@@ -211,6 +226,43 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         }
         return true;
     }
+
+    @Override
+    public ResultPage<Bug> searchBugByDemandId(String id) {
+        ResultPage<? extends Bug> rp = bugPersister.search(
+                ConditionUtil.eq(ConditionUtil.field("demandId"),id)
+        );
+
+        List<Bug> list = new ArrayList<>();
+        // 产品不多的时候直接遍历过滤，多了就要考虑使用索引查询
+        for (Bug bug : ResultPageHelper.toForeach(rp)) {
+            if(bug.getStatus() == STATUS_SHANCHU){
+                continue;
+            }
+            list.add(bug);
+        }
+        return ResultPageHelper.toResultPage(list);
+    }
+
+    @Override
+    public ResultPage<Bug> getAllBugs(String keywords) {
+        ResultPage<? extends Bug> rp = bugPersister.startsWith("bug");
+        List<Bug> list = new ArrayList<>();
+        // 产品不多的时候直接遍历过滤，多了就要考虑使用索引查询
+        for (Bug bug : ResultPageHelper.toForeach(rp)) {
+
+            if(bug.getStatus() == STATUS_DELETE){
+                continue;
+            }
+            if(!bug.getDescription().contains(keywords)){
+                continue;
+            }
+
+            list.add(bug);
+        }
+        return ResultPageHelper.toResultPage(list);
+    }
+
 
 }
 

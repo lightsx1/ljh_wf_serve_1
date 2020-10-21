@@ -14,8 +14,6 @@ import weforward.Bo.Demand;
 import weforward.Exception.DemandServiceCode;
 import weforward.Exception.StatusException;
 import weforward.Service.DemandService;
-import weforward.Service.TagService;
-import weforward.View.DemandView;
 import weforward.View.SonDemandView;
 import weforward.View.TagCreateView;
 import weforward.Bo.Tag;
@@ -30,8 +28,6 @@ public class TagMethods implements ExceptionHandler {
     @Resource
     protected DemandService demandService;
 
-    @Resource
-    protected TagService tagService;
 
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
@@ -43,7 +39,7 @@ public class TagMethods implements ExceptionHandler {
         //*****************************************************
         ValidateUtil.isEmpty(name, "产品标题不能为空");
         //*******************************************************
-        Tag tag = tagService.createTag(name);
+        Tag tag = demandService.createTag(name);
         return TagCreateView.valueOf(tag);
     }
 
@@ -78,7 +74,7 @@ public class TagMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签名称"))
-    @DocMethod(description = "删除标签", index = 3)
+    @DocMethod(name="deleteTag",description = "删除标签", index = 3)
     public String deleteTag(FriendlyObject params) throws ApiException, StatusException {
         demandService.deleteTag(params.getString("id"));
         return "删除成功";

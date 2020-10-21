@@ -24,8 +24,22 @@ public interface Bug {
 
     NameItem STATUS_CHONGXINDAKAI = NameItem.valueOf("重新打开", 8);
 
+    NameItem STATUS_SHANCHU = NameItem.valueOf("删除", 999);
+
+
+
     NameItems STATUS = NameItems.valueOf(STATUS_DAIXIUZHENG,STATUS_DAIFUCE,STATUS_JIANYI,
             STATUS_SHENQING,STATUS_YIJIEJUE,STATUS_BUZUOXIUGAI,STATUS_WUFAJIEJUE,STATUS_CHONGXINDAKAI);
+
+    NameItem PRIORITY_ERROR = NameItem.valueOf("功能错误", 1);
+
+    NameItem PRIORITY_EFFECT = NameItem.valueOf("影响流程", 2);
+
+    NameItem PRIORITY_NEWDEMAND = NameItem.valueOf("新需求", 3);
+
+    NameItem PRIORITY_SUGGEST = NameItem.valueOf("优化建议", 4);
+
+    NameItems PRIORITY = NameItems.valueOf(PRIORITY_ERROR, PRIORITY_EFFECT,PRIORITY_NEWDEMAND,PRIORITY_SUGGEST);
 
     UniteId getId();
 

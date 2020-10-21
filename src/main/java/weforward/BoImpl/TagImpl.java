@@ -36,6 +36,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
         this.name = name;
         this.status = 1;
         markPersistenceUpdate();
+        getBusinessDi().writeLog(getId(), "创建了一个新的标签", "", "");
     }
 
     @Override

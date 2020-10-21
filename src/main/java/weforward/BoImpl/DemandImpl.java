@@ -328,6 +328,10 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             this.status = status;
         }
 
+        if(this.status == 7 || this.status == 8) {
+            this.end = new Date(System.currentTimeMillis());
+        }
+
         markPersistenceUpdate();
         getBusinessDi().writeLog(getId(), "状态扭转", "", "");
     }

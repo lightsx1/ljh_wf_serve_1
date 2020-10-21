@@ -1,8 +1,10 @@
 package weforward.Service;
 
 import cn.weforward.common.ResultPage;
+import weforward.Bo.Bug;
 import weforward.Bo.Demand;
 import weforward.Bo.Tag;
+import weforward.BoImpl.BugImpl;
 import weforward.BoImpl.DemandImpl;
 import weforward.Exception.StatusException;
 
@@ -87,18 +89,28 @@ public interface DemandService {
 
     String dropTagForDemand(String demandId) throws StatusException;
 
+    ResultPage<Demand> searchDemandByTagId(String id);
+
+    String follow(String id);
 
     ResultPage<DemandImpl> SearchSonDemand(String id);
 
+    Bug createBug(String user, String demandId, String description, int priority , String dealer , String version);
+
+    Bug getBug(String id);
+
+    ResultPage<Bug> getAllBugs(String keywords);
 
     Tag createTag(String name);
+
+
 
     ResultPage<Tag> searchTagByKeywords(String keyword);
 
     String deleteTag(String id) throws StatusException;
 
-    ResultPage<Demand> searchDemandByTagId(String id);
+    ResultPage<Bug> searchBugByDemandId(String id);
 
-    String follow(String id);
+
 
 }
