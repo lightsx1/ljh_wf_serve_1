@@ -1,4 +1,4 @@
-package weforward.Params;
+package weforward.View;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 
@@ -6,7 +6,7 @@ public class SonDemandParams extends DemandParams {
 
     protected String fid;
 
-    @DocAttribute(necessary = true, description = "父需求id")
+    @DocAttribute(necessary = true, description = "父任务id")
     public String getFid() {
         return this.fid;
     }

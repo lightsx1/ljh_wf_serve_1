@@ -2,9 +2,7 @@ package weforward.View;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
-import weforward.Bo.Tag;
-
-import java.util.List;
+import weforward.Tag;
 
 @DocObject(description = "标签视图")
 public class TagSearchView {

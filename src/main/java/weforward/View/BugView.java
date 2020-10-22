@@ -2,11 +2,11 @@ package weforward.View;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
-import weforward.Bo.Bug;
+import weforward.Bug;
 
 import java.util.Date;
 
-@DocObject(description = "Bug视图")
+@DocObject(description = "缺陷视图")
 public class BugView {
 
     protected Bug bug;
@@ -19,23 +19,23 @@ public class BugView {
         return null == bug ? null : new BugView(bug);
     }
 
-    @DocAttribute(description = "Bug_id")
+    @DocAttribute(description = "缺陷id")
     public String getId() {
         return bug.getId().getOrdinal();
     }
 
-    @DocAttribute(description = "Bug详情")
+    @DocAttribute(description = "缺陷详情")
     public String getDescription() {
         return bug.getDescription();
     }
 
-    @DocAttribute(description = "Bug状态")
-    public int getStatus() {
-        return bug.getStatus();
+    @DocAttribute(description = "缺陷状态")
+    public String getStatus() {
+        return bug.getStatus().getName();
     }
 
-    @DocAttribute(description = "Bug严重性")
-    public int getPriority() {
+    @DocAttribute(description = "缺陷严重性")
+    public String getPriority() {
         return bug.getPriority();
     }
 
@@ -43,7 +43,6 @@ public class BugView {
     public String getTester() {
         return bug.getTester();
     }
-
 
     @DocAttribute(description = "处理人")
     public String getDealer() {

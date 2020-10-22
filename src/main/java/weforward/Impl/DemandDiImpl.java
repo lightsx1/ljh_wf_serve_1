@@ -1,4 +1,4 @@
-package weforward.DiImpl;
+package weforward.Impl;
 
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
@@ -8,14 +8,9 @@ import cn.weforward.data.log.BusinessLoggerFactory;
 import cn.weforward.data.persister.Persistent;
 import cn.weforward.data.persister.Persister;
 import cn.weforward.data.persister.PersisterFactory;
-import cn.weforward.data.search.Searcher;
-import cn.weforward.data.search.SearcherFactory;
-import weforward.Bo.Bug;
-import weforward.Bo.Demand;
-import weforward.Bo.Tag;
-import weforward.BoImpl.BugImpl;
-import weforward.BoImpl.DemandImpl;
-import weforward.BoImpl.TagImpl;
+import weforward.Bug;
+import weforward.Demand;
+import weforward.Tag;
 import weforward.Di.DemandDi;
 import weforward.Exception.StatusException;
 
@@ -24,7 +19,7 @@ public class DemandDiImpl implements DemandDi{
     /*持久化工厂*/
     protected PersisterFactory Factory;
 
-    /*需求持久器*/
+    /*任务持久器*/
     protected Persister<DemandImpl> demandPersistent;
 
 
@@ -47,7 +42,7 @@ public class DemandDiImpl implements DemandDi{
     }
 
     /**
-     * 根据id，从持久器中取得对应的需求
+     * 根据id，从持久器中取得对应的任务
      * @param id
      * @return
      */
@@ -75,15 +70,15 @@ public class DemandDiImpl implements DemandDi{
     public void DropTagForDemand(String demandId) throws StatusException {
         Demand demand = demandPersistent.get(demandId);
         if(demand.getTagId()==null || demand.getTagId().equals("")){
-            throw new StatusException("需求的标签为空，不能删除标签");
+            throw new StatusException("任务的标签为空，不能删除标签");
         }
         demandPersistent.get(demandId).setTagId(null);
     }
 
 
     @Override
-    public void writeLog(UniteId id, String action, String what, String note) {
-        m_BusinessLogger.writeLog(id.getId(), "管理员", action, what, note);
+    public void writeLog(UniteId id, String user, String action, String what, String note) {
+        m_BusinessLogger.writeLog(id.getId(), user, action, what, note);
     }
 
     @Override

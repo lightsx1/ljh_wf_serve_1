@@ -1,23 +1,19 @@
-package weforward.BoImpl;
+package weforward.Impl;
 
 import cn.weforward.common.NameItem;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.persister.support.AbstractPersistent;
 import weforward.Di.DemandDi;
-import weforward.Bo.Tag;
+import weforward.Tag;
 import weforward.Exception.StatusException;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
 
     /**
-     * 对应需求id
+     * 对应任务id
      */
-
     @Resource
     protected String name;
 
@@ -27,7 +23,8 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     @Resource
     protected int status;
 
-    protected TagImpl(DemandDi di) {super(di);
+    protected TagImpl(DemandDi di) {
+        super(di);
     }
 
     public TagImpl(DemandDi di ,String name) {
@@ -36,7 +33,6 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
         this.name = name;
         this.status = 1;
         markPersistenceUpdate();
-        getBusinessDi().writeLog(getId(), "创建了一个新的标签", "", "");
     }
 
     @Override

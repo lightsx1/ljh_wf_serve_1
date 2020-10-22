@@ -1,4 +1,4 @@
-package weforward.Component;
+package weforward.weforward;
 
 import cn.weforward.framework.doc.DocObjectProvider;
 import cn.weforward.protocol.datatype.DataType;

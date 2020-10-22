@@ -1,4 +1,4 @@
-package weforward.Methods;
+package weforward.weforward;
 
 import cn.weforward.common.ResultPage;
 import cn.weforward.common.util.TransResultPage;
@@ -13,11 +13,10 @@ import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocMethod;
 import cn.weforward.protocol.doc.annotation.DocParameter;
 import cn.weforward.protocol.support.datatype.FriendlyObject;
-import weforward.Bo.Demand;
-import weforward.BoImpl.DemandImpl;
-import weforward.Params.SonDemandParams;
-import weforward.Service.DemandService;
-import weforward.View.DemandView;
+import weforward.Demand;
+import weforward.Impl.DemandImpl;
+import weforward.DemandService;
+import weforward.View.SonDemandParams;
 import weforward.View.SonDemandView;
 
 import javax.annotation.Resource;
@@ -33,7 +32,7 @@ public class SonDemandMethods {
     protected DemandService demandService;
 
     @WeforwardMethod
-    @DocMethod(description = "创建子需求", index =0 )
+    @DocMethod(description = "创建子任务", index =0 )
     public SonDemandView create(SonDemandParams params) throws ApiException {
 
         String fid = params.getFid();
@@ -53,13 +52,14 @@ public class SonDemandMethods {
         ValidateUtil.isEmpty(end, "产品预计结束时间不能为空");
         //*******************************************************
         Demand demand = demandService.createDemand(getUser(),fid,title,description,priority,charger,start,end);
+        demandService.getDemand(fid).writeSonLog(getUser());
         return SonDemandView.valueOf(demand);
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "父需求id"))
-    @DocMethod(description = "查询一个父需求下的所有子需求", index = 1 )
+    @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "父任务id"))
+    @DocMethod(description = "查询一个父任务下的所有子任务", index = 1 )
     public ResultPage<SonDemandView> search(FriendlyObject params) throws ApiException {
         ResultPage<DemandImpl> rp = demandService.SearchSonDemand(params.getString("demandId"));
         return new TransResultPage<SonDemandView, DemandImpl>(rp) {

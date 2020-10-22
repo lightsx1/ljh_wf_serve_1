@@ -1,20 +1,17 @@
-package weforward.Bo;
+package weforward;
 
 import cn.weforward.common.NameItem;
 import cn.weforward.common.NameItems;
 import cn.weforward.data.UniteId;
 import weforward.Exception.StatusException;
 
-import java.util.List;
-
 public interface Tag {
 
-    NameItem Status_NORMAL = NameItem.valueOf("正常状态", 1);
+    NameItem STATUS_NORMAL = NameItem.valueOf("正常状态", 1);
 
-    NameItem Status_DELETE = NameItem.valueOf("已删除", 2);
+    NameItem STATUS_DELETED = NameItem.valueOf("已删除", 2);
 
-    NameItems STATUS = NameItems.valueOf(Status_NORMAL, Status_DELETE);
-
+    NameItems STATUS = NameItems.valueOf(STATUS_NORMAL, STATUS_DELETED);
 
 
     UniteId getId();

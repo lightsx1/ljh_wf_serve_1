@@ -1,4 +1,4 @@
-package weforward.Params;
+package weforward.View;
 
 import cn.weforward.framework.doc.DocPageParams;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
@@ -10,7 +10,7 @@ public class DemandSearchParams extends DocPageParams {
 
     protected String keywords;
 
-    protected int status;
+    protected int option;
 
     public void setKeywords(String keywords) {
         this.keywords = keywords;
@@ -21,13 +21,13 @@ public class DemandSearchParams extends DocPageParams {
         return keywords;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setOption(int option) {
+        this.option = option;
     }
 
-    @DocAttribute(description = "需求状态  0=全部 ,1=未完成 ,2=已完成",example = "0")
-    public int getStatus() {
-        return status;
+    @DocAttribute(description = "任务状态 1=未完成 ,2=已完成, 其他数字为全部",example = "0")
+    public int getOption() {
+        return option;
     }
 
 }

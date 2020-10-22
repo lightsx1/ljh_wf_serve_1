@@ -48,7 +48,7 @@
     </bean>
 
     <!-- 产品服务 -->
-    <bean id="demandService" class="weforward.ServiceImpl.DemandServiceImpl">
+    <bean id="demandService" class="weforward.Impl.DemandServiceImpl">
         <constructor-arg index="0" ref="productPersisterFactory"/>
         <constructor-arg index="1" ref="productLoggerFactory"/>
     </bean>

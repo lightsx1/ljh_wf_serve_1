@@ -1,16 +1,15 @@
-package weforward.Params;
+package weforward.View;
 
-import cn.weforward.common.NameItem;
-import cn.weforward.data.UniteId;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-@DocObject(description = "需求信息")
-public class DemandParams {
+@DocObject(description = "更新任务参数")
+public class DemandUpdateParams extends DemandParams{
+
+    protected String m_Id;
 
     protected String title;
 
@@ -24,7 +23,7 @@ public class DemandParams {
 
     protected Date end;
 
-    @DocAttribute(necessary = true, description = "需求标题", example = "标题1")
+    @DocAttribute(  description = "任务标题", example = "标题1")
     public String getTitle() {
         return this.title;
     }
@@ -33,7 +32,7 @@ public class DemandParams {
         this.title = title;
     }
 
-    @DocAttribute(necessary = true, description = "需求详情", example = "详情1")
+    @DocAttribute(  description = "任务详情", example = "详情1")
     public String getDescription() {
         return description;
     }
@@ -42,7 +41,7 @@ public class DemandParams {
         this.description = description;
     }
 
-    @DocAttribute(necessary = true, description = "需求负责人", example = "负责人1")
+    @DocAttribute(  description = "任务负责人", example = "负责人1")
     public List<String> getCharger() {
         return this.charger;
     }
@@ -51,8 +50,7 @@ public class DemandParams {
         this.charger = charger;
     }
 
-
-    @DocAttribute(necessary = true, description = "需求预计开始时间", example = "2019-11-29T00:30:00.666Z")
+    @DocAttribute(  description = "任务预计开始时间", example = "2019-11-29T00:30:00.666Z")
     public Date getStart() {
         return this.start;
     }
@@ -61,7 +59,7 @@ public class DemandParams {
         this.start = start;
     }
 
-    @DocAttribute(necessary = true, description = "需求预计结束时间", example = "2019-10-29T00:30:00.666Z")
+    @DocAttribute(  description = "任务预计结束时间", example = "2019-10-29T00:30:00.666Z")
     public Date getEnd() {
         return this.end;
     }
@@ -70,12 +68,21 @@ public class DemandParams {
         this.end = End;
     }
 
-    @DocAttribute(necessary = true, description = "需求优先级", example = "1")
+    @DocAttribute(  description = "任务优先级", example = "1")
     public int getPriority(){
         return this.priority;
     }
 
     public void setPriority(int priority){
         this.priority = priority;
+    }
+
+    public void setId(String id) {
+        m_Id = id;
+    }
+
+    @DocAttribute(necessary = true, description = "任务id")
+    public String getId() {
+        return m_Id;
     }
 }

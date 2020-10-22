@@ -1,44 +1,24 @@
-package weforward.Service;
+package weforward;
 
+import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
-import weforward.Bo.Bug;
-import weforward.Bo.Demand;
-import weforward.Bo.Tag;
-import weforward.BoImpl.BugImpl;
-import weforward.BoImpl.DemandImpl;
+import weforward.Bug;
+import weforward.Demand;
+import weforward.Tag;
+import weforward.Impl.DemandImpl;
 import weforward.Exception.StatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface DemandService {
 
-    /** 状态-评估中 */
-    int STATUS_PINGGU = 1;
-    /** 状态-规划中 */
-    int STATUS_GUIHUA = 2;
-    /** 状态-待开发 */
-    int STATUS_DAIKAIFA = 3;
-    /** 状态-开发中 */
-    int STATUS_KAIFAZHONG = 4;
-    /** 状态-待测试 */
-    int STATUS_DAICESHI = 5;
-    /** 状态-测试中 */
-    int STATUS_CESHIZHONG = 6;
-    /** 状态-测试通过 */
-    int STATUS_CESHITONGGUO = 7;
-    /** 状态-已上线 */
-    int STATUS_YISHANGXIAN = 8;
-    /** 状态-已拒绝 */
-    int STATUS_YIJUJUE = 9;
-    /** 状态-挂起 */
-    int STATUS_GUAQI = 10;
-    /** 状态-删除 */
-    int STATUS_SHANCHU = 999;
+    int OPTION_NONE = 0;
 
-    int STATUS_NORMAL = 1;
+    int OPTION_NOTFINISHED = 1;
 
-    int STATUS_DELETE = 2;
+    int OPTION_FINISHED = 2;
 
     /**
      * @param user
@@ -73,7 +53,7 @@ public interface DemandService {
      * @param keywords
      * @return
      */
-    ResultPage<Demand> searchDemands(String keywords, int status);
+    ResultPage<Demand> searchDemands(String keywords, int D_STATUS);
 
     /**
      *
@@ -95,7 +75,7 @@ public interface DemandService {
 
     ResultPage<DemandImpl> SearchSonDemand(String id);
 
-    Bug createBug(String user, String demandId, String description, int priority , String dealer , String version);
+    Bug createBug(String user, String demandId, String description, String priority , String dealer , String version);
 
     Bug getBug(String id);
 
@@ -103,7 +83,7 @@ public interface DemandService {
 
     Tag createTag(String name);
 
-
+    List <Map < String,Integer> > analysis(String id);
 
     ResultPage<Tag> searchTagByKeywords(String keyword);
 
