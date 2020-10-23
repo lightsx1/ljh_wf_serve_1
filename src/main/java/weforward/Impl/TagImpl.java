@@ -61,6 +61,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     @Override
     public void deleteTag() throws StatusException {
         this.status = STATUS_DELETED.id;
+        markPersistenceUpdate();
     }
 
 }

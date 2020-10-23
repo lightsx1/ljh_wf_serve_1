@@ -32,23 +32,29 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public Demand createDemand(String user, String title, String description, int priority, Set<String> charger,  Date start, Date end) {
+    public Demand createDemand(String user, String title, String description, int priority, Set<String> charger, Date start, Date end) {
         return new DemandImpl(this, user, title, description, priority, charger, start, end);
     }
 
     @Override
-    public Demand createDemand(String user, String fid,String title, String description, int priority, Set<String> charger, Date start, Date end) {
-        return new DemandImpl(this, user, fid,title, description, priority, charger, start, end);
+    public Demand createDemand(String user, String fid, String title, String description, int priority, Set<String> charger, Date start, Date end) throws StatusException {
+        if (demandPersistent.get(fid) == null|| demandPersistent.get(fid).getStatus().id == Demand.STATUS_DELETED.id ) {
+            throw new StatusException("新增出错！不存在该id的父任务");
+        }
+        return new DemandImpl(this, user, fid, title, description, priority, charger, start, end);
     }
 
     @Override
-    public Bug createBug(String user, String demandId, String description, String priority , String dealer , String version){
-        return demandPersistent.get(demandId).createBug(this,user,demandId,description,priority,dealer,version);
+    public Bug createBug(String user, String demandId, String description, String priority, String dealer, String version) throws StatusException {
+        if (demandPersistent.get(demandId) == null || demandPersistent.get(demandId).getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("新增出错！不存在该id的任务");
+        }
+        return demandPersistent.get(demandId).createBug(this, user, demandId, description, priority, dealer, version);
     }
 
     @Override
     public Tag createTag(String name) {
-        return new TagImpl(this,name);
+        return new TagImpl(this, name);
     }
 
     @Override
@@ -62,8 +68,11 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public Demand deleteDemand(String id) {
+    public Demand deleteDemand(String id) throws StatusException {
         Demand demand = demandPersistent.get(id);
+        if (demand == null || demand.getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("删除失败！不存在该id的任务");
+        }
         demand.delete();
         return demand;
     }
@@ -74,7 +83,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         ResultPage<? extends Demand> rp = demandPersistent.search(
                 ConditionUtil.and(
                         ConditionUtil.eq(ConditionUtil.field("fid"), (String) null), ConditionUtil.ne(ConditionUtil.field("status"), Demand.STATUS_DELETED.id)
-        ));
+                ));
 
         List<Demand> list = new ArrayList<>();
         for (Demand demand : ResultPageHelper.toForeach(rp)) {
@@ -90,23 +99,41 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public String addTagForDemandByTagId(String demandId, String tagId) {
-        demandPersistent.get(demandId).addTagForDemand(demandId,tagId);
+    public String addTagForDemandByTagId(String demandId, String tagId) throws StatusException {
+        Demand demand = demandPersistent.get(demandId);
+        Tag tag = tagPersister.get(tagId);
+
+        if (demand == null || demand.getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("任务添加标签出错！不存在该id的任务");
+        }
+
+
+        if (tag == null || tag.getStatus().id == Tag.STATUS_DELETED.id) {
+            throw new StatusException("任务添加标签出错！不存在该id的标签");
+        }
+
+        demandPersistent.get(demandId).addTagForDemand(demandId, tagId);
         return "添加成功";
     }
 
     @Override
     public String dropTagForDemandByTagId(String demandId) throws StatusException {
+
+        Demand demand = demandPersistent.get(demandId);
+        if (demand == null || demand.getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("任务删除标签出错！不存在该id的任务");
+        }
         demandPersistent.get(demandId).dropTagForDemand(demandId);
         return "删除标签成功";
     }
 
     @Override
-    public ResultPage <DemandImpl> searchSonDemand(String id) {
+    public ResultPage<DemandImpl> searchSonDemand(String id) {
         ResultPage<DemandImpl> rp = demandPersistent.search(
-         ConditionUtil.and(
-                ConditionUtil.eq(ConditionUtil.field("fid"),id)
-        ));
+                ConditionUtil.and(
+                        ConditionUtil.ne(ConditionUtil.field("fid"), (String) null), ConditionUtil.ne(ConditionUtil.field("status"), Demand.STATUS_DELETED.id)
+                ));
+
         return rp;
     }
 
@@ -117,13 +144,12 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         List<Tag> list = new ArrayList<>();
         for (Tag tag : ResultPageHelper.toForeach(rp)) {
 
-            if(tag.getStatus().id == Tag.STATUS_DELETED.id){
+            if (tag.getStatus().id == Tag.STATUS_DELETED.id) {
                 continue;
             }
-            if(!tag.getName().contains(keywords)){
+            if (!tag.getName().contains(keywords)) {
                 continue;
             }
-
             list.add(tag);
         }
         return ResultPageHelper.toResultPage(list);
@@ -132,33 +158,35 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     @Override
     public String deleteTag(String id) throws StatusException {
 
+        Tag tag = tagPersister.get(id);
+        if (tag == null || tag.getStatus().id == Tag.STATUS_DELETED.id) {
+            throw new StatusException("不存在该id的标签");
+        }
+
         ResultPage<? extends Demand> rp = demandPersistent.search(
                 ConditionUtil.and(
-                        ConditionUtil.eq(ConditionUtil.field("tagId"), id),ConditionUtil.ne(ConditionUtil.field("status"),Demand.STATUS_DELETED.id)
+                        ConditionUtil.eq(ConditionUtil.field("tagId"), id), ConditionUtil.ne(ConditionUtil.field("status"), Demand.STATUS_DELETED.id)
                 )
         );
 
-        if(rp != null || rp.hasNext()){
+        if (rp.getCount() != 0) {
             throw new TagException("还有需求正在使用本标签，不能删除");
         }
 
-        if(tagPersister.get(id).getStatus().id == Tag.STATUS_DELETED.id){
-            throw new StatusException("该标签已被删除，不能重复删除");
-        }
-        tagPersister.get(id).deleteTag();
+        tag.deleteTag();
         return "删除成功";
     }
 
     @Override
     public ResultPage<Demand> searchDemandByTagId(String id) {
-        ResultPage< ? extends Demand> rp = demandPersistent.search(
+        ResultPage<? extends Demand> rp = demandPersistent.search(
                 ConditionUtil.and(
-                        ConditionUtil.eq(ConditionUtil.field("tagId"), id),ConditionUtil.ne(ConditionUtil.field("status"),Demand.STATUS_DELETED.id)
+                        ConditionUtil.eq(ConditionUtil.field("tagId"), id), ConditionUtil.ne(ConditionUtil.field("status"), Demand.STATUS_DELETED.id)
                 )
         );
         List<Demand> list = new ArrayList<>();
         for (Demand demand : ResultPageHelper.toForeach(rp)) {
-            if(demand.getStatus().id == Demand.STATUS_DELETED.id){
+            if (demand.getStatus().id == Demand.STATUS_DELETED.id) {
                 continue;
             }
             list.add(demand);
@@ -167,8 +195,12 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public String follow(String id) {
-        demandPersistent.get(id).follow();
+    public String follow(String id, String user) throws StatusException {
+        Demand demand = demandPersistent.get(id);
+        if (demand == null || demand.getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("不存在该id任务");
+        }
+        demand.follow(user);
         return "跟进成功";
     }
 
@@ -177,7 +209,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     public ResultPage<Bug> searchBugByDemandId(String id) {
         ResultPage<? extends Bug> rp = bugPersister.search(
                 ConditionUtil.and(
-                        ConditionUtil.eq(ConditionUtil.field("demandId"), id),ConditionUtil.ne(ConditionUtil.field("status"),Bug.STATUS_DELETED.id)
+                        ConditionUtil.eq(ConditionUtil.field("demandId"), id), ConditionUtil.ne(ConditionUtil.field("status"), Bug.STATUS_DELETED.id)
                 )
         );
         List<Bug> list = new ArrayList<>();
@@ -188,15 +220,19 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     }
 
     @Override
-    public List <Map<String,Integer>> analysis(String id) {
+    public List<Map<String, Integer>> analysis(String id) throws StatusException {
+
+        Demand demand = demandPersistent.get(id);
+        if (demand == null || demand.getStatus().id == Demand.STATUS_DELETED.id) {
+            throw new StatusException("分析出错！不存在该id的任务");
+        }
 
         ResultPage<? extends Bug> rp = bugPersister.search(
                 ConditionUtil.and(
-                        ConditionUtil.eq(ConditionUtil.field("demandId"), id),ConditionUtil.ne(ConditionUtil.field("status"),Bug.STATUS_DELETED.id)
+                        ConditionUtil.eq(ConditionUtil.field("demandId"), id), ConditionUtil.ne(ConditionUtil.field("status"), Bug.STATUS_DELETED.id)
                 )
         );
 
-        Demand demand = demandPersistent.get(id);
         return demand.analysis(rp);
     }
 
@@ -204,13 +240,12 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
     public ResultPage<Bug> getAllBugs(String keywords) {
         ResultPage<? extends Bug> rp = bugPersister.startsWith("bug");
         List<Bug> list = new ArrayList<>();
-        // 产品不多的时候直接遍历过滤，多了就要考虑使用索引查询
         for (Bug bug : ResultPageHelper.toForeach(rp)) {
 
-            if(bug.getStatus().id == Bug.STATUS_DELETED.id){
+            if (bug.getStatus().id == Bug.STATUS_DELETED.id) {
                 continue;
             }
-            if(!bug.getDescription().contains(keywords)){
+            if (!bug.getDescription().contains(keywords)) {
                 continue;
             }
 
@@ -218,7 +253,6 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         }
         return ResultPageHelper.toResultPage(list);
     }
-
 
 
     private static boolean isMatch(Demand demand, String keywords) {
@@ -228,17 +262,17 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         String m_title = demand.getTitle();
         String m_creator = demand.getCreator();
         String m_follower = demand.getFollower();
-        if(m_follower == null){
+        if (m_follower == null) {
             m_follower = "";
         }
 
-        if (StringUtil.isEmpty(m_title) && StringUtil.isEmpty(m_creator) && StringUtil.isEmpty(m_follower) && demand.getCharger().size()==0) {
+        if (StringUtil.isEmpty(m_title) && StringUtil.isEmpty(m_creator) && StringUtil.isEmpty(m_follower) && demand.getCharger().size() == 0) {
             return false;
         }
 
         boolean result = false;
-        for(String charger : demand.getCharger()){
-            if(charger.contains(keywords)) {
+        for (String charger : demand.getCharger()) {
+            if (charger.contains(keywords)) {
                 result = true;
             }
         }
@@ -250,16 +284,16 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
 
         NameItem m_status = demand.getStatus();
 
-        if(status == OPTION_NONE){
+        if (status == OPTION_NONE) {
             return true;
         }
         if (status == OPTION_FINISHED) {
-            if (m_status.id == Demand.STATUS_EVALUATING.id ||  m_status.id == Demand.STATUS_PLANNING.id || m_status.id == Demand.STATUS_ToBeDeveloped.id
-                    || m_status.id == Demand.STATUS_DEVELOPING.id || m_status.id == Demand.STATUS_ToBeTested.id || m_status.id == Demand.STATUS_TESTING.id || m_status.id == Demand.STATUS_TESTED.id|| m_status.id == Demand.STATUS_HANGED.id) {
+            if (m_status.id == Demand.STATUS_EVALUATING.id || m_status.id == Demand.STATUS_PLANNING.id || m_status.id == Demand.STATUS_ToBeDeveloped.id
+                    || m_status.id == Demand.STATUS_DEVELOPING.id || m_status.id == Demand.STATUS_ToBeTested.id || m_status.id == Demand.STATUS_TESTING.id || m_status.id == Demand.STATUS_TESTED.id || m_status.id == Demand.STATUS_HANGED.id) {
                 return false;
             }
         } else if (status == OPTION_NOTFINISHED) {
-            if (m_status.id == Demand.STATUS_ONLINE.id || m_status.id == Demand.STATUS_REJECTED.id ) {
+            if (m_status.id == Demand.STATUS_ONLINE.id || m_status.id == Demand.STATUS_REJECTED.id) {
                 return false;
             }
         }

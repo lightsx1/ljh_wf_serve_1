@@ -98,7 +98,7 @@ public interface Demand {
 
     String getFollower();
 
-    void follow();
+    void follow(String user);
 
     Date getStart();
 

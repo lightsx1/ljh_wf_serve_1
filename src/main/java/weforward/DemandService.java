@@ -25,25 +25,25 @@ public interface DemandService {
     Demand createDemand(String user, String title, String description, int priority, Set<String> charger,
                         Date start, Date end);
 
-    Demand createDemand(String user, String fid, String title, String description, int priority, Set<String> charger, Date start, Date end);
+    Demand createDemand(String user, String fid, String title, String description, int priority, Set<String> charger, Date start, Date end) throws StatusException;
 
     Demand getDemand(String id);
 
-    Demand deleteDemand(String id);
+    Demand deleteDemand(String id) throws StatusException;
 
     ResultPage<Demand> searchDemands(String keywords, int D_STATUS);
 
-    String addTagForDemandByTagId(String demandId, String tagId);
+    String addTagForDemandByTagId(String demandId, String tagId) throws StatusException;
 
     String dropTagForDemandByTagId(String demandId) throws StatusException;
 
     ResultPage<Demand> searchDemandByTagId(String id);
 
-    String follow(String id);
+    String follow(String id,String user) throws StatusException;
 
     ResultPage<DemandImpl> searchSonDemand(String id);
 
-    Bug createBug(String user, String demandId, String description, String priority , String dealer , String version);
+    Bug createBug(String user, String demandId, String description, String priority , String dealer , String version) throws StatusException;
 
     Bug getBug(String id);
 
@@ -51,7 +51,7 @@ public interface DemandService {
 
     Tag createTag(String name);
 
-    List <Map < String,Integer> > analysis(String id);
+    List <Map < String,Integer> > analysis(String id) throws StatusException;
 
     ResultPage<Tag> searchTagByKeywords(String keyword);
 

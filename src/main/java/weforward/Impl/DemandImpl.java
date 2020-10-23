@@ -200,8 +200,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public void follow() {
-        String follower = getUser();
+    public void follow(String follower) {
         if(this.follower != null) {
             if(this.follower.equals(follower)) {
                 return;

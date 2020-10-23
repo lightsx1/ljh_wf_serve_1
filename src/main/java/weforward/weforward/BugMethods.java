@@ -14,15 +14,12 @@ import cn.weforward.protocol.doc.annotation.DocMethod;
 import cn.weforward.protocol.doc.annotation.DocParameter;
 import cn.weforward.protocol.support.datatype.FriendlyObject;
 import weforward.Bug;
-import weforward.Demand;
 import weforward.View.*;
-import weforward.weforward.DemandServiceCode;
 import weforward.Exception.StatusException;
 import weforward.DemandService;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+
 
 @DocMethods(index = 400)
 @WeforwardMethods
@@ -31,7 +28,6 @@ public class BugMethods implements ExceptionHandler {
     @Resource
     protected DemandService demandService;
 
-    //session.getAttribute()
     private String getUser() {
         String user = Global.TLS.getValue("user");
         if (null == user) {
@@ -43,7 +39,7 @@ public class BugMethods implements ExceptionHandler {
 
     @WeforwardMethod
     @DocMethod(description = "创建缺陷", index = 0)
-    public BugView createBug(BugParams params) throws ApiException {
+    public BugView createBug(BugParams params) throws ApiException, StatusException {
 
         String demandId = params.getDemandId();
         String description = params.getDescription();
@@ -121,7 +117,7 @@ public class BugMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "根据id获取单个缺陷", index = 2)
-    public BugView getBugByBugId(FriendlyObject params) throws ApiException {
+        public BugView getBugByBugId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);

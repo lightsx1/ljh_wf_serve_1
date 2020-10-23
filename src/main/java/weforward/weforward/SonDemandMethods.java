@@ -14,6 +14,7 @@ import cn.weforward.protocol.doc.annotation.DocMethod;
 import cn.weforward.protocol.doc.annotation.DocParameter;
 import cn.weforward.protocol.support.datatype.FriendlyObject;
 import weforward.Demand;
+import weforward.Exception.StatusException;
 import weforward.Impl.DemandImpl;
 import weforward.DemandService;
 import weforward.View.SonDemandParams;
@@ -35,7 +36,7 @@ public class SonDemandMethods {
 
     @WeforwardMethod
     @DocMethod(description = "创建子任务", index =0 )
-    public SonDemandView createSonDemand(SonDemandParams params) throws ApiException {
+    public SonDemandView createSonDemand(SonDemandParams params) throws ApiException, StatusException {
 
         String fid = params.getFid();
         String title = params.getTitle();

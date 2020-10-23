@@ -86,18 +86,22 @@ public class DemandMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
-    @DocMethod(description = "获取任务", index = 2)
+    @DocMethod(description = "根据id获取单个任务", index = 2)
     public DemandView getDemand(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id不能为空");
-        return DemandView.valueOf(demandService.getDemand(id));
+        Demand demand = demandService.getDemand(id);
+        if( demand == null){
+            return null;
+        }
+        return DemandView.valueOf(demand);
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "删除任务", index = 3)
-    public DemandView deleteDemand(FriendlyObject params) throws ApiException {
+    public DemandView deleteDemand(FriendlyObject params) throws ApiException, StatusException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id不能为空");
         return DemandView.valueOf(demandService.deleteDemand(id));
@@ -106,14 +110,14 @@ public class DemandMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocMethod(description = "更新任务", index = 4)
-    public DemandView updateDemand(DemandUpdateParams params) throws ApiException {
+    public DemandView updateDemand(DemandUpdateParams params) throws ApiException, StatusException {
 
         String id =params.getId();
         ValidateUtil.isEmpty(id, "任务id不能为空");
         Demand demand = demandService.getDemand(id);
 
         if (null == demand) {
-            return null;
+            throw new StatusException("更新失败，不存在该id的任务");
         }
 
         String name = params.getTitle();
@@ -154,7 +158,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter({@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"), @DocAttribute(name = "tagId", type = String.class, necessary = true, description = "标签id")})
     @DocMethod(description = "为任务添加标签", index =5)
-    public String addTagForDemand(FriendlyObject params) throws ApiException {
+    public String addTagForDemand(FriendlyObject params) throws ApiException, StatusException {
         String demandId =params.getString("demandId");
         String tagId =params.getString("tagId");
         ValidateUtil.isEmpty(demandId,"任务id不能为空");
@@ -179,7 +183,7 @@ public class DemandMethods implements ExceptionHandler {
     public String followDemand(FriendlyObject params) throws ApiException, StatusException {
         String demandId =params.getString("demandId");
         ValidateUtil.isEmpty(demandId, "任务id不能为空");
-        return demandService.follow(params.getString("demandId"));
+        return demandService.follow(params.getString("demandId"),getUser());
     }
 
     @KeepServiceOrigin
@@ -188,7 +192,7 @@ public class DemandMethods implements ExceptionHandler {
     @DocMethod(description = "获得标签下所有任务", index = 8)
     public ResultPage<SonDemandView> getDemandsByTagId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
-        ValidateUtil.isEmpty(id, "标签id");
+        ValidateUtil.isEmpty(id, "标签id不能为空");
         ResultPage<Demand> rp = demandService .searchDemandByTagId(id);
         return new TransResultPage<SonDemandView, Demand>(rp) {
             @Override
@@ -202,7 +206,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "缺陷分析", index = 9)
-    public List <Map<String,Integer>> analysisBug(FriendlyObject params) throws ApiException {
+    public List <Map<String,Integer>> analysisBug(FriendlyObject params) throws ApiException, StatusException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id");
         List< Map<String,Integer> > list = demandService.analysis(params.getString("id"));
@@ -232,6 +236,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toEvaluating();
         return DemandView.valueOf(demand);
     }
@@ -244,6 +251,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toPlanning();
         return DemandView.valueOf(demand);
     }
@@ -256,6 +266,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toBeDeveloped();
         return DemandView.valueOf(demand);
     }
@@ -268,6 +281,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toDevloping();
         return DemandView.valueOf(demand);
     }
@@ -280,6 +296,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toBeTested();
         return DemandView.valueOf(demand);
     }
@@ -292,6 +311,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toTesting();
         return DemandView.valueOf(demand);
     }
@@ -304,6 +326,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toTested();
         return DemandView.valueOf(demand);
     }
@@ -316,6 +341,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toOnline();
         return DemandView.valueOf(demand);
     }
@@ -328,6 +356,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toRejected();
         return DemandView.valueOf(demand);
     }
@@ -340,6 +371,9 @@ public class DemandMethods implements ExceptionHandler {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);
+        if(demand == null){
+            throw new StatusException("不存在该id任务");
+        }
         demand.toHanged();
         return DemandView.valueOf(demand);
     }
