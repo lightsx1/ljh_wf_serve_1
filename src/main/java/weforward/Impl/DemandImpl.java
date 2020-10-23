@@ -6,6 +6,7 @@ import cn.weforward.data.UniteId;
 import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.support.AbstractPersistent;
 import cn.weforward.framework.support.Global;
+import weforward.Bug;
 import weforward.Demand;
 import weforward.Di.DemandDi;
 import weforward.Exception.StatusException;
@@ -13,6 +14,8 @@ import weforward.Exception.StatusException;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand {
 
@@ -34,7 +37,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*任务负责人*/
     @Resource
-    protected List<String> charger;
+    protected Set<String> charger;
 
     /*任务跟进人*/
     @Resource
@@ -85,7 +88,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @return
      */
 
-    public DemandImpl(DemandDi di,String user,String title, String description, int priority, List<String> charger,
+    public DemandImpl(DemandDi di,String user,String title, String description, int priority, Set<String> charger,
                       Date start, Date end) {
         super(di);
         genPersistenceId(user);
@@ -117,7 +120,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @return
      */
 
-    public DemandImpl(DemandDi di,String user,String fid, String title, String description, int priority, List<String> charger,
+    public DemandImpl(DemandDi di,String user,String fid, String title, String description, int priority, Set<String> charger,
                       Date start, Date end) {
         super(di);
         genPersistenceId(user);
@@ -180,12 +183,12 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public List<String> getCharger() {
+    public Set<String> getCharger() {
         return this.charger;
     }
 
     @Override
-    public void setCharger(List<String> charger) {
+    public void setCharger(Set<String> charger) {
         if(this.charger.toString().equals(charger.toString())) return;
         this.charger = charger;
         markPersistenceUpdate();
@@ -446,15 +449,26 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     @Override
     public void addTagForDemand(String demandId , String tagId){
-        getBusinessDi().AddTagForDemand(demandId,tagId);
+        getBusinessDi().addTagForDemand(demandId,tagId);
     }
 
 
     @Override
-    public void DropTagForDemand(String demandId) throws StatusException {
-        getBusinessDi().DropTagForDemand(demandId);
+    public void dropTagForDemand(String demandId) throws StatusException {
+        getBusinessDi().dropTagForDemand(demandId);
     }
 
+    @Override
+    public Bug createBug(DemandDi di, String user, String demandId, String description, String priority, String dealer, String version){
+        return getBusinessDi().createBug(di, user, demandId, description, priority, dealer, version);
+    }
+
+    @Override
+    public List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp){
+        return getBusinessDi().analysis(rp);
+    }
+
+    @Override
     public ResultPage<BusinessLog> getLogs() {
         return getBusinessDi().getLogs(getId());
     }

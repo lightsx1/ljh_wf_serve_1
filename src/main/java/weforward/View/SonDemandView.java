@@ -6,6 +6,7 @@ import weforward.Demand;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @DocObject(description = "子任务视图")
 public class SonDemandView {
@@ -44,7 +45,7 @@ public class SonDemandView {
 
 
     @DocAttribute(description = "任务负责人")
-    public List<String> getCharger() {
+    public Set<String> getCharger() {
         return demand.getCharger();
     }
 

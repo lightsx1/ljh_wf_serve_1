@@ -23,6 +23,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     @Resource
     protected int status;
 
+
     protected TagImpl(DemandDi di) {
         super(di);
     }
@@ -59,7 +60,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
 
     @Override
     public void deleteTag() throws StatusException {
-        this.status = 2;
+        this.status = STATUS_DELETED.id;
     }
 
 }

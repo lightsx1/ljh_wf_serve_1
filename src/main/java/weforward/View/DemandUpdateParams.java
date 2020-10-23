@@ -5,6 +5,7 @@ import cn.weforward.protocol.doc.annotation.DocObject;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @DocObject(description = "更新任务参数")
 public class DemandUpdateParams extends DemandParams{

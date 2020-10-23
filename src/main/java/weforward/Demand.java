@@ -5,10 +5,13 @@ import cn.weforward.common.NameItems;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.log.BusinessLog;
+import weforward.Di.DemandDi;
 import weforward.Exception.StatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 任务Bo
@@ -89,9 +92,9 @@ public interface Demand {
 
     void setDescription(String description);
 
-    List<String> getCharger();
+    Set<String> getCharger();
 
-    void setCharger(List<String> Charger);
+    void setCharger(Set<String> Charger);
 
     String getFollower();
 
@@ -151,7 +154,11 @@ public interface Demand {
 
     void addTagForDemand(String demandId, String tagId);
 
-    void DropTagForDemand(String demandId) throws StatusException;
+    void dropTagForDemand(String demandId) throws StatusException;
+
+    Bug createBug(DemandDi di, String user, String demandId, String description, String priority, String dealer, String version);
+
+    List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp);
 
     ResultPage<BusinessLog> getLogs();
 

@@ -8,6 +8,7 @@ import cn.weforward.protocol.doc.annotation.DocObject;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @DocObject(description = "任务信息")
 public class DemandParams {
@@ -70,7 +71,7 @@ public class DemandParams {
         this.end = End;
     }
 
-    @DocAttribute(necessary = true, description = "任务优先级", example = "1")
+    @DocAttribute(necessary = true, description = "任务优先级， 1=最高级，2=高级，3=中级，4=低级", example = "1")
     public int getPriority(){
         return this.priority;
     }

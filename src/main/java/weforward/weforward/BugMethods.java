@@ -43,7 +43,7 @@ public class BugMethods implements ExceptionHandler {
 
     @WeforwardMethod
     @DocMethod(description = "创建缺陷", index = 0)
-    public BugView create(BugParams params) throws ApiException {
+    public BugView createBug(BugParams params) throws ApiException {
 
         String demandId = params.getDemandId();
         String description = params.getDescription();
@@ -52,11 +52,11 @@ public class BugMethods implements ExceptionHandler {
         String version = params.getVersion();
 
         //*****************************************************
-        ValidateUtil.isEmpty(demandId, "任务标题不能为空");
-        ValidateUtil.isEmpty(description, "任务详情不能为空");
-        ValidateUtil.isEmpty(priority, "任务优先级不能为空");
-        ValidateUtil.isEmpty(dealer, "任务预计开始时间不能为空");
-        ValidateUtil.isEmpty(version, "任务预计结束时间不能为空");
+        ValidateUtil.isEmpty(demandId, "缺陷id不能为空");
+        ValidateUtil.isEmpty(description, "缺陷详情不能为空");
+        ValidateUtil.isEmpty(priority, "缺陷严重性不能为空");
+        ValidateUtil.isEmpty(dealer, "缺陷处理人不能为空");
+        ValidateUtil.isEmpty(version, "版本与平台不能为空");
         //*******************************************************
         Bug bug = demandService.createBug(getUser(), demandId, description, priority, dealer,version);
         return BugView.valueOf(bug);
@@ -65,7 +65,7 @@ public class BugMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocMethod(description = "更新缺陷", index = 4)
-    public BugView update(BugUpdateParams params) throws ApiException {
+    public BugView updateBug(BugUpdateParams params) throws ApiException {
 
         String bugId =params.getBugId();
         ValidateUtil.isEmpty(bugId, "缺陷id不能为空");
@@ -102,7 +102,7 @@ public class BugMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "根据任务Id搜索Bug", index = 1)
-    public TransResultPage<BugView, Bug> searchBugByDemandId(FriendlyObject params) throws ApiException {
+    public TransResultPage<BugView, Bug> searchBugsByDemandId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id不能为空");
         ResultPage <Bug> rp =demandService.searchBugByDemandId(id);
@@ -121,7 +121,7 @@ public class BugMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "根据id获取单个缺陷", index = 2)
-    public BugView get(FriendlyObject params) throws ApiException {
+    public BugView getBugByBugId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
@@ -134,7 +134,6 @@ public class BugMethods implements ExceptionHandler {
     @DocMethod(description = "根据关键字获取所有缺陷", index = 3)
     public TransResultPage <BugView, Bug> getAllBugs(FriendlyObject params) throws ApiException {
         String keyword =params.getString("keyword");
-        ValidateUtil.isEmpty(keyword, "关键字不能为空");
         ResultPage <Bug> rp = demandService.getAllBugs(params.getString("keyword"));
         return new TransResultPage<BugView, Bug>(rp) {
             @Override
@@ -147,7 +146,7 @@ public class BugMethods implements ExceptionHandler {
     
     @WeforwardMethod
     @DocMethod(description = "获取缺陷日志", index = 4)
-    public ResultPage<LogView> logs(LogsParams params) throws ApiException {
+    public ResultPage<LogView> getBugLogs(LogsParams params) throws ApiException {
         String id = params.getId();
         ValidateUtil.isEmpty(id, "id不能为空");
         Bug bug = demandService.getBug(id);

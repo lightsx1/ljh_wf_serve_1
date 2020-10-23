@@ -48,8 +48,6 @@ public interface Bug {
 
     void setStatus(int status);
 
-    boolean isDealed();
-
     String getTester();
 
     void setTester(String tester);
@@ -58,13 +56,9 @@ public interface Bug {
 
     void setDealer(String dealer);
 
-
     String getCreator();
 
-
     Date getLastTime();
-
-    void setLastTime(Date lastTime);
 
     void toBeCorrected() throws StatusException;
 
@@ -81,6 +75,8 @@ public interface Bug {
     void toCant() throws StatusException;
 
     void toReopened() throws StatusException;
+
+    boolean isDealed();
 
     ResultPage<BusinessLog> getLogs();
 }

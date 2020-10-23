@@ -4,7 +4,6 @@ import cn.weforward.common.ResultPage;
 import cn.weforward.common.util.StringUtil;
 import cn.weforward.common.util.TransResultPage;
 import cn.weforward.data.log.BusinessLog;
-import cn.weforward.data.persister.ext.ConditionUtil;
 import cn.weforward.framework.*;
 import cn.weforward.framework.doc.DocMethods;
 import cn.weforward.framework.exception.ForwardException;
@@ -22,9 +21,7 @@ import weforward.Exception.StatusException;
 import weforward.DemandService;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @DocMethods(index = 100)
 @WeforwardMethods
@@ -46,12 +43,12 @@ public class DemandMethods implements ExceptionHandler {
 
     @WeforwardMethod
     @DocMethod(description = "创建任务", index = 0)
-    public DemandView create(DemandParams params) throws ApiException {
+    public DemandView createDemand(DemandParams params) throws ApiException {
 
         String title = params.getTitle();
         String description = params.getDescription();
         int priority = params.getPriority();
-        List<String> charger = params.getCharger();
+        Set<String> charger = new HashSet<>(params.getCharger());
         Date start = params.getStart();
         Date end = params.getEnd();
         //*****************************************************
@@ -70,7 +67,7 @@ public class DemandMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocMethod(description = "搜索任务", index = 1)
-    public ResultPage<DemandView> search(DemandSearchParams params) throws ApiException {
+    public ResultPage<DemandView> searchDemands(DemandSearchParams params) throws ApiException {
 
         String keywords = params.getKeywords();
 
@@ -90,7 +87,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "获取任务", index = 2)
-    public DemandView get(FriendlyObject params) throws ApiException {
+    public DemandView getDemand(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id不能为空");
         return DemandView.valueOf(demandService.getDemand(id));
@@ -100,7 +97,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "删除任务", index = 3)
-    public DemandView delete(FriendlyObject params) throws ApiException {
+    public DemandView deleteDemand(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id不能为空");
         return DemandView.valueOf(demandService.deleteDemand(id));
@@ -109,7 +106,7 @@ public class DemandMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocMethod(description = "更新任务", index = 4)
-    public DemandView update(DemandUpdateParams params) throws ApiException {
+    public DemandView updateDemand(DemandUpdateParams params) throws ApiException {
 
         String id =params.getId();
         ValidateUtil.isEmpty(id, "任务id不能为空");
@@ -134,7 +131,7 @@ public class DemandMethods implements ExceptionHandler {
             demand.setDescription(description);
         }
 
-        List<String> charger = params.getCharger();
+        Set<String> charger = new HashSet<>(params.getCharger());
         if (charger.size() > 0) {
             demand.setCharger(charger);
         }
@@ -157,29 +154,29 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter({@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"), @DocAttribute(name = "tagId", type = String.class, necessary = true, description = "标签id")})
     @DocMethod(description = "为任务添加标签", index =5)
-    public String AddTagForDemand(FriendlyObject params) throws ApiException {
+    public String addTagForDemand(FriendlyObject params) throws ApiException {
         String demandId =params.getString("demandId");
         String tagId =params.getString("tagId");
         ValidateUtil.isEmpty(demandId,"任务id不能为空");
         ValidateUtil.isEmpty(tagId,"标签id不能为空");
-        return demandService.addTagForDemand(demandId,tagId);
+        return demandService.addTagForDemandByTagId(demandId,tagId);
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "删除任务中标签", index = 6)
-    public String DropTagForDemand(FriendlyObject params) throws ApiException, StatusException {
+    public String dropTagForDemand(FriendlyObject params) throws ApiException, StatusException {
         String demandId =params.getString("demandId");
         ValidateUtil.isEmpty(demandId, "任务id不能为空");
-        return demandService.dropTagForDemand(demandId);
+        return demandService.dropTagForDemandByTagId(demandId);
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "跟进", index = 7)
-    public String follow(FriendlyObject params) throws ApiException, StatusException {
+    public String followDemand(FriendlyObject params) throws ApiException, StatusException {
         String demandId =params.getString("demandId");
         ValidateUtil.isEmpty(demandId, "任务id不能为空");
         return demandService.follow(params.getString("demandId"));
@@ -189,7 +186,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签id"))
     @DocMethod(description = "获得标签下所有任务", index = 8)
-    public ResultPage<SonDemandView> getTags(FriendlyObject params) throws ApiException {
+    public ResultPage<SonDemandView> getDemandsByTagId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "标签id");
         ResultPage<Demand> rp = demandService .searchDemandByTagId(id);
@@ -205,7 +202,7 @@ public class DemandMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
     @DocMethod(description = "缺陷分析", index = 9)
-    public List <Map<String,Integer>> analysis(FriendlyObject params) throws ApiException {
+    public List <Map<String,Integer>> analysisBug(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
         ValidateUtil.isEmpty(id, "任务id");
         List< Map<String,Integer> > list = demandService.analysis(params.getString("id"));
@@ -214,7 +211,7 @@ public class DemandMethods implements ExceptionHandler {
 
     @WeforwardMethod
     @DocMethod(description = "获取任务日志", index = 10)
-    public ResultPage<LogView> logs(LogsParams params) throws ApiException {
+    public ResultPage<LogView> getDemandLogs(LogsParams params) throws ApiException {
         String id = params.getId();
         ValidateUtil.isEmpty(id, "id不能为空");
         Demand demand = demandService.getDemand(id);

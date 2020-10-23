@@ -15,7 +15,6 @@ public class BugParams {
 
     protected String description;
 
-
     protected String priority;
 
     protected String dealer;

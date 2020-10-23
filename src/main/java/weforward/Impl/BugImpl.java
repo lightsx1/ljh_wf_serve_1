@@ -150,11 +150,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         return lastTime;
     }
 
-    @Override
-    public void setLastTime(Date lastTime) {
-        this.lastTime = lastTime;
-        markPersistenceUpdate();
-    }
 
     @Override
     public void toBeCorrected() throws StatusException {

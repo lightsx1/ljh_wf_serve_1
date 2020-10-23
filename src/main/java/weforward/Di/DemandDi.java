@@ -9,6 +9,8 @@ import weforward.Demand;
 import weforward.Tag;
 import weforward.Exception.StatusException;
 
+import java.util.List;
+import java.util.Map;
 
 
 public interface DemandDi extends BusinessDi{
@@ -60,12 +62,22 @@ public interface DemandDi extends BusinessDi{
      * @param tagId
      * @return
      */
-    void AddTagForDemand(String demandId , String tagId);
+    void addTagForDemand(String demandId , String tagId);
 
     /**
      * 为任务删除标签
      * @param demandId
      * @return
      */
-    void DropTagForDemand(String demandId) throws StatusException;
+    void dropTagForDemand(String demandId) throws StatusException;
+
+    /*
+    *  新建缺陷
+    * */
+    Bug createBug(DemandDi di, String user, String demandId, String description, String priority, String dealer,String version);
+
+    /*
+     *  缺陷分析
+     * */
+    List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp);
 }

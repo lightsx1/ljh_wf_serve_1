@@ -32,7 +32,7 @@ public class TagMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
     @DocMethod(description = "创建标签", index = 0)
-    public TagCreateView create(FriendlyObject params) throws ApiException {
+    public TagCreateView createTag(FriendlyObject params) throws ApiException {
 
         String name = params.getString("name");
 
@@ -48,7 +48,7 @@ public class TagMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
     @DocMethod(description = "搜索标签", index = 1)
-    public ResultPage<TagSearchView> searchTag(FriendlyObject params) throws ApiException {
+    public ResultPage<TagSearchView> searchTagByName(FriendlyObject params) throws ApiException {
         ResultPage<Tag> rp = demandService.searchTagByKeywords(params.getString("name"));
         return new TransResultPage<TagSearchView, Tag>(rp) {
             @Override

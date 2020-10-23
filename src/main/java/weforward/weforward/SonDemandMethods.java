@@ -21,7 +21,9 @@ import weforward.View.SonDemandView;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @DocMethods(index = 300)
 @WeforwardMethods
@@ -33,13 +35,13 @@ public class SonDemandMethods {
 
     @WeforwardMethod
     @DocMethod(description = "创建子任务", index =0 )
-    public SonDemandView create(SonDemandParams params) throws ApiException {
+    public SonDemandView createSonDemand(SonDemandParams params) throws ApiException {
 
         String fid = params.getFid();
         String title = params.getTitle();
         String description = params.getDescription();
         int priority = params.getPriority();
-        List<String> charger = params.getCharger();
+        Set<String> charger = new HashSet<>(params.getCharger());
         Date start = params.getStart();
         Date end = params.getEnd();
         //*****************************************************
@@ -60,8 +62,8 @@ public class SonDemandMethods {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "父任务id"))
     @DocMethod(description = "查询一个父任务下的所有子任务", index = 1 )
-    public ResultPage<SonDemandView> search(FriendlyObject params) throws ApiException {
-        ResultPage<DemandImpl> rp = demandService.SearchSonDemand(params.getString("demandId"));
+    public ResultPage<SonDemandView> searchSonDemand(FriendlyObject params) throws ApiException {
+        ResultPage<DemandImpl> rp = demandService.searchSonDemand(params.getString("demandId"));
         return new TransResultPage<SonDemandView, DemandImpl>(rp) {
             @Override
             protected SonDemandView trans(DemandImpl src) {
