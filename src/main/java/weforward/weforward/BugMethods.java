@@ -7,15 +7,16 @@ import cn.weforward.data.log.BusinessLog;
 import cn.weforward.framework.*;
 import cn.weforward.framework.doc.DocMethods;
 import cn.weforward.framework.exception.ForwardException;
-import cn.weforward.framework.support.Global;
 import cn.weforward.framework.util.ValidateUtil;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocMethod;
 import cn.weforward.protocol.doc.annotation.DocParameter;
+import cn.weforward.protocol.ops.User;
 import cn.weforward.protocol.support.datatype.FriendlyObject;
 import weforward.Bug;
-import weforward.View.*;
-import weforward.Exception.StatusException;
+import weforward.exception.DemandException;
+import weforward.view.*;
+import weforward.exception.StatusException;
 import weforward.DemandService;
 
 import javax.annotation.Resource;
@@ -29,17 +30,15 @@ public class BugMethods implements ExceptionHandler {
     protected DemandService demandService;
 
     private String getUser() {
-        String user = Global.TLS.getValue("user");
-        if (null == user) {
-            user = "admin";
-        }
-        return user;
+        User user = WeforwardSession.TLS.getOperator();
+        String name = null == user ? "admin" : user.getName();
+        return name;
     }
 
 
     @WeforwardMethod
     @DocMethod(description = "创建缺陷", index = 0)
-    public BugView createBug(BugParams params) throws ApiException, StatusException {
+    public BugView createBug(BugParams params) throws ApiException, DemandException {
 
         String demandId = params.getDemandId();
         String description = params.getDescription();
@@ -96,12 +95,13 @@ public class BugMethods implements ExceptionHandler {
 
 
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"))
+    @DocParameter({@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"),@DocAttribute(name = "keyword", type = String.class, necessary = true, description = "关键字")})
     @DocMethod(description = "根据任务Id搜索Bug", index = 1)
     public TransResultPage<BugView, Bug> searchBugsByDemandId(FriendlyObject params) throws ApiException {
         String id =params.getString("id");
+        String keyword = params.getString("keyword");
         ValidateUtil.isEmpty(id, "任务id不能为空");
-        ResultPage <Bug> rp =demandService.searchBugByDemandId(id);
+        ResultPage <Bug> rp =demandService.searchBugByDemandId(id,keyword);
 
         return new TransResultPage<BugView, Bug>(rp) {
             @Override
@@ -122,21 +122,6 @@ public class BugMethods implements ExceptionHandler {
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         return BugView.valueOf(bug);
-    }
-
-    @KeepServiceOrigin
-    @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "keyword", type = String.class, necessary = true, description = "关键字"))
-    @DocMethod(description = "根据关键字获取所有缺陷", index = 3)
-    public TransResultPage <BugView, Bug> getAllBugs(FriendlyObject params) throws ApiException {
-        String keyword =params.getString("keyword");
-        ResultPage <Bug> rp = demandService.getAllBugs(params.getString("keyword"));
-        return new TransResultPage<BugView, Bug>(rp) {
-            @Override
-            protected BugView trans(Bug src) {
-                return BugView.valueOf(src);
-            }
-        };
     }
 
     
@@ -253,8 +238,8 @@ public class BugMethods implements ExceptionHandler {
 
     @Override
     public Throwable exception(Throwable error) {
-        if (error instanceof StatusException) {
-            return new ApiException(DemandServiceCode.getCode((StatusException) error), error.getMessage());
+        if (error instanceof Exception) {
+            return new ApiException(DemandServiceCode.getCode((Exception) error), error.getMessage());
         }
         return error;
     }

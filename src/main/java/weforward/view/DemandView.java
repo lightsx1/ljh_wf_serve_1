@@ -1,11 +1,10 @@
-package weforward.View;
+package weforward.view;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 import weforward.Demand;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @DocObject(description = "任务视图")
@@ -45,34 +44,30 @@ public class DemandView {
 
     @DocAttribute(description = "任务负责人")
     public Set<String> getCharger() {
-        return demand.getCharger();
+        return demand.getDealer();
     }
-
 
     @DocAttribute(description = "任务跟进人")
     public String getFollower() {
         return demand.getFollower();
     }
 
-
     @DocAttribute(description = "任务预计开始时间")
     public Date getStart() {
-        return demand.getStart();
+        return demand.getWillingStartTime();
     }
-
 
     @DocAttribute(description = "任务预计结束时间")
     public Date getEnd() {
-        return demand.getEnd();
+        return demand.getWillingEndTime();
     }
-
 
     @DocAttribute(description = "任务优先级")
     public String getPriority(){
         return demand.getPriority().getName();
     }
 
-    @DocAttribute(description = "任务优先级")
+    @DocAttribute(description = "任务状态")
     public String getStatus(){
         return demand.getStatus().getName();
     }
@@ -82,7 +77,7 @@ public class DemandView {
         return demand.getEndTime();
     }
 
-    @DocAttribute(description = "任务结束时间")
+    @DocAttribute(description = "任务创建时间")
     public Date getCreateTime(){
         return demand.getCreateTime();
     }

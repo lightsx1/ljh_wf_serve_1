@@ -3,7 +3,7 @@ package weforward;
 import cn.weforward.common.NameItem;
 import cn.weforward.common.NameItems;
 import cn.weforward.data.UniteId;
-import weforward.Exception.StatusException;
+import weforward.exception.TagException;
 
 public interface Tag {
 
@@ -13,7 +13,6 @@ public interface Tag {
 
     NameItems STATUS = NameItems.valueOf(STATUS_NORMAL, STATUS_DELETED);
 
-
     UniteId getId();
 
     String getName();
@@ -22,8 +21,7 @@ public interface Tag {
 
     NameItem getStatus();
 
-
-    void deleteTag() throws StatusException;
+    void deleteTag() throws TagException;
 
 
 }

@@ -1,13 +1,9 @@
 package weforward;
 
-import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
-import weforward.Bug;
-import weforward.Demand;
-import weforward.Di.DemandDi;
-import weforward.Tag;
-import weforward.Impl.DemandImpl;
-import weforward.Exception.StatusException;
+import weforward.exception.DemandException;
+import weforward.exception.TagException;
+import weforward.impl.DemandImpl;
 
 import java.util.Date;
 import java.util.List;
@@ -22,28 +18,31 @@ public interface DemandService {
 
     int OPTION_FINISHED = 2;
 
-    Demand createDemand(String user, String title, String description, int priority, Set<String> charger,
-                        Date start, Date end);
+    Demand createDemand(String user, String title, String description, int priority, String charger, Set<String> dealer,
+                        Date start, Date end, String tagId) throws TagException;
 
-    Demand createDemand(String user, String fid, String title, String description, int priority, Set<String> charger, Date start, Date end) throws StatusException;
+    Demand createSonDemand(String user, String fid, String title, String description,int priority, String charger, Set<String> dealer,
+                           Date start, Date end, String tagId) throws DemandException, TagException;
 
     Demand getDemand(String id);
 
-    Demand deleteDemand(String id) throws StatusException;
+    Tag getTag(String id);
 
-    ResultPage<Demand> searchDemands(String keywords, int D_STATUS);
+    Demand deleteDemand(String id) throws  DemandException;
 
-    String addTagForDemandByTagId(String demandId, String tagId) throws StatusException;
+    ResultPage<Demand> searchDemands(String keywords, int D_STATUS) throws DemandException;
 
-    String dropTagForDemandByTagId(String demandId) throws StatusException;
+    String addTagForDemandByTagId(String demandId, String tagId) throws TagException, DemandException;
+
+    String dropTagForDemandByTagId(String demandId) throws TagException;
 
     ResultPage<Demand> searchDemandByTagId(String id);
 
-    String follow(String id,String user) throws StatusException;
+    String follow(String id,String user) throws DemandException;
 
-    ResultPage<DemandImpl> searchSonDemand(String id);
+    ResultPage <Demand> searchSonDemand(String id) throws DemandException;
 
-    Bug createBug(String user, String demandId, String description, String priority , String dealer , String version) throws StatusException;
+    Bug createBug(String user, String demandId, String description, String priority , String dealer , String version) throws DemandException;
 
     Bug getBug(String id);
 
@@ -51,14 +50,13 @@ public interface DemandService {
 
     Tag createTag(String name);
 
-    List <Map < String,Integer> > analysis(String id) throws StatusException;
+    List <Map < String,Integer> > analysis(String id) throws DemandException;
 
     ResultPage<Tag> searchTagByKeywords(String keyword);
 
-    String deleteTag(String id) throws StatusException;
+    String deleteTag(String id) throws TagException;
 
-    ResultPage<Bug> searchBugByDemandId(String id);
-
+    ResultPage<Bug> searchBugByDemandId(String id, String keyword);
 
 
 }

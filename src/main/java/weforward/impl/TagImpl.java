@@ -1,25 +1,20 @@
-package weforward.Impl;
+package weforward.impl;
 
 import cn.weforward.common.NameItem;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.persister.support.AbstractPersistent;
-import weforward.Di.DemandDi;
+import weforward.di.DemandDi;
 import weforward.Tag;
-import weforward.Exception.StatusException;
 
 import javax.annotation.Resource;
 
 public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
 
-    /**
-     * 对应任务id
-     */
+    /** 标签名称*/
     @Resource
     protected String name;
 
-    /*
-    * 标签状态，1表示正常使用，2表示删除
-    * */
+    /** 标签状态，1表示正常使用，2表示删除*/
     @Resource
     protected int status;
 
@@ -59,7 +54,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
 
 
     @Override
-    public void deleteTag() throws StatusException {
+    public void deleteTag() {
         this.status = STATUS_DELETED.id;
         markPersistenceUpdate();
     }

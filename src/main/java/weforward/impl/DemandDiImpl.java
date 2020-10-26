@@ -1,4 +1,4 @@
-package weforward.Impl;
+package weforward.impl;
 
 import cn.weforward.common.ResultPage;
 import cn.weforward.common.util.ResultPageHelper;
@@ -9,17 +9,16 @@ import cn.weforward.data.log.BusinessLoggerFactory;
 import cn.weforward.data.persister.Persistent;
 import cn.weforward.data.persister.Persister;
 import cn.weforward.data.persister.PersisterFactory;
-import cn.weforward.data.persister.ext.ConditionUtil;
+import cn.weforward.framework.WeforwardSession;
+import cn.weforward.protocol.ops.User;
 import weforward.Bug;
 import weforward.Demand;
+import weforward.exception.DemandException;
+import weforward.exception.TagException;
 import weforward.Tag;
-import weforward.Di.DemandDi;
-import weforward.Exception.StatusException;
+import weforward.di.DemandDi;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DemandDiImpl implements DemandDi{
 
@@ -74,11 +73,7 @@ public class DemandDiImpl implements DemandDi{
     }
 
     @Override
-    public void dropTagForDemand(String demandId) throws StatusException {
-        Demand demand = demandPersistent.get(demandId);
-        if(demand.getTagId()==null || demand.getTagId().equals("")){
-            throw new StatusException("任务的标签为空，不能删除标签");
-        }
+    public void dropTagForDemand(String demandId) throws TagException {
         demandPersistent.get(demandId).setTagId(null);
     }
 
@@ -97,6 +92,13 @@ public class DemandDiImpl implements DemandDi{
         HashMap <String,Integer> dealerMap = new HashMap<>();
 
         for (Bug bug : ResultPageHelper.toForeach(rp)) {
+
+            if( finishMap.get("总数") ==null){
+                finishMap.put("总数",1);
+            }
+            else{
+                finishMap.put("总数",finishMap.get("总数")+1);
+            }
 
             if(bug.isDealed() == true){
                 if( finishMap.get("已完成") ==null){
@@ -211,10 +213,11 @@ public class DemandDiImpl implements DemandDi{
         return list;
     }
 
-
     @Override
-    public void writeLog(UniteId id, String user, String action, String what, String note) {
-        m_BusinessLogger.writeLog(id.getId(), user, action, what, note);
+    public void writeLog(UniteId id, String action, String what, String note) {
+        User user = WeforwardSession.TLS.getOperator();
+        String author = null == user ? "system" : user.getName();
+        m_BusinessLogger.writeLog(id.getId(), author, action, what, note);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package weforward.Impl;
+package weforward.impl;
 
 import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
@@ -7,8 +7,8 @@ import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.support.AbstractPersistent;
 import cn.weforward.framework.support.Global;
 import weforward.Bug;
-import weforward.Di.DemandDi;
-import weforward.Exception.StatusException;
+import weforward.di.DemandDi;
+import weforward.exception.StatusException;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -65,7 +65,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         this.version = version;
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
-        getBusinessDi().writeLog(getId(), user, "创建了一个新的BUG", "", "");
+        getBusinessDi().writeLog(getId(),"创建了一个新的BUG", "", "");
     }
 
     @Override
@@ -105,11 +105,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         return STATUS.get(this.status);
     }
 
-    @Override
-    public void setStatus(int status) {
-        this.status = status;
-        markPersistenceUpdate();
-    }
 
     @Override
     public boolean isDealed() {
@@ -162,7 +157,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_ToBeCorrected.getName());
         }
         this.status = STATUS_ToBeCorrected.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeCorrected.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeCorrected.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
@@ -178,7 +173,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_ToBeRested.getName());
         }
         this.status = STATUS_ToBeRested.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeRested.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeRested.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
@@ -194,7 +189,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_SUGGEST.getName());
         }
         this.status = STATUS_SUGGEST.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_SUGGEST.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_SUGGEST.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
@@ -210,7 +205,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_APPLY.getName());
         }
         this.status = STATUS_APPLY.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_APPLY.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_APPLY.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
@@ -226,7 +221,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_DONE.getName());
         }
         this.status = STATUS_DONE.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_DONE.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_DONE.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         this.isDealed = true;
         markPersistenceUpdate();
@@ -243,7 +238,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_NONE.getName());
         }
         this.status = STATUS_DONE.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_NONE.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_NONE.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         this.isDealed = true;
         markPersistenceUpdate();
@@ -260,7 +255,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_CANT.getName());
         }
         this.status = STATUS_CANT.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_CANT.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_CANT.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         this.isDealed = true;
         markPersistenceUpdate();
@@ -277,7 +272,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_REOPENED.getName());
         }
         this.status = STATUS_REOPENED.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_REOPENED.getName(), "");
+        getBusinessDi().writeLog(getId(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_REOPENED.getName(), "");
         this.lastTime = new Date(System.currentTimeMillis());
         this.isDealed = false;
         markPersistenceUpdate();

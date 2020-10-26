@@ -1,4 +1,4 @@
-package weforward.Impl;
+package weforward.impl;
 
 import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
@@ -8,14 +8,12 @@ import cn.weforward.data.persister.support.AbstractPersistent;
 import cn.weforward.framework.support.Global;
 import weforward.Bug;
 import weforward.Demand;
-import weforward.Di.DemandDi;
-import weforward.Exception.StatusException;
+import weforward.di.DemandDi;
+import weforward.exception.StatusException;
+import weforward.exception.TagException;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand {
 
@@ -31,13 +29,17 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Resource
     protected String description;
 
-    /*任务优先级*/
+    /*任务优先级 1-最高级 2-高级 3-中级 4-低级 */
     @Resource
     protected int priority;
 
+    /*任务处理人*/
+    @Resource
+    protected Set<String> dealer;
+
     /*任务负责人*/
     @Resource
-    protected Set<String> charger;
+    protected String charger;
 
     /*任务跟进人*/
     @Resource
@@ -45,19 +47,19 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*任务预期开始时间*/
     @Resource
-    protected Date start;
+    protected Date willingStartTime;
 
     /*任务预期结束时间*/
     @Resource
-    protected Date end;
+    protected Date willingEndTime;
 
     /*任务结束时间*/
     @Resource
-    protected Date endtime;
+    protected Date endTime;
 
     /*任务创建时间*/
     @Resource
-    protected Date creattime;
+    protected Date createTime;
 
     /*任务当前状态*/
     @Resource
@@ -83,28 +85,32 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @param description
      * @param priority
      * @param charger
-     * @param start
-     * @param end
+     * @param dealer
+     * @param willingStartTime
+     * @param willingEndTime
+     * @param tagId
      * @return
      */
-
-    public DemandImpl(DemandDi di,String user,String title, String description, int priority, Set<String> charger,
-                      Date start, Date end) {
+    public DemandImpl(DemandDi di, String user, String title, String description, int priority, String charger, Set<String> dealer,
+                      Date willingStartTime, Date willingEndTime, String tagId) {
         super(di);
-        genPersistenceId(user);
+        genPersistenceId("demand");
         this.title = title;
         this.description = description;
         this.priority = PRIORITY.get(priority).id;
         this.charger = charger;
-        this.start = start;
-        this.end = end;
+        this.willingStartTime = willingStartTime;
+        this.willingEndTime = willingEndTime;
         this.status = STATUS_EVALUATING.id;
-        this.creattime = new Date(System.currentTimeMillis());
+        this.createTime = new Date(System.currentTimeMillis());
         this.creator = user;
         this.fid = null;
-        this.tagId = null;
+        this.tagId = tagId;
+        if(dealer.size() != 0){
+            this.dealer = dealer;
+        }
         markPersistenceUpdate();
-        getBusinessDi().writeLog(getId(), user,"创建了一个新的任务", "", "");
+        getBusinessDi().writeLog(getId(), "创建了一个新的任务", "", "");
     }
 
     /**
@@ -114,28 +120,28 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @param title
      * @param description
      * @param priority
-     * @param charger
-     * @param start
-     * @param end
+     * @param willingStartTime
+     * @param willingEndTime
      * @return
      */
 
-    public DemandImpl(DemandDi di,String user,String fid, String title, String description, int priority, Set<String> charger,
-                      Date start, Date end) {
+    public DemandImpl(DemandDi di, String user, String fid, String title, String description, int priority, String charger, Set<String> dealer,
+                      Date willingStartTime, Date willingEndTime) {
         super(di);
-        genPersistenceId(user);
+        genPersistenceId("sonDemand");
         this.fid = fid;
         this.title = title;
         this.description = description;
         this.priority = PRIORITY.get(priority).id;
         this.charger = charger;
-        this.start = start;
-        this.end = end;
+        this.willingStartTime = willingStartTime;
+        this.willingEndTime = willingEndTime;
         this.status = STATUS_EVALUATING.id;
-        this.creattime = new Date(System.currentTimeMillis());
+        this.createTime = new Date(System.currentTimeMillis());
         this.creator = user;
+        this.dealer = dealer;
         markPersistenceUpdate();
-        getBusinessDi().writeLog(getId(), user,"创建了一个新的子任务", "", "");
+        getBusinessDi().writeLog(getId(), "创建了一个新的子任务", "", "");
     }
 
     @Override
@@ -144,18 +150,8 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public void writeSonLog(String user){
-        getBusinessDi().writeLog(getId(), user,"创建了一个新的子任务", "", "");
-    }
-
-    @Override
     public String getFid() {
         return fid;
-    }
-
-    @Override
-    public void setFid(String fid) {
-        this.fid = fid;
     }
 
     @Override
@@ -167,6 +163,18 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     public void setTitle(String title) {
         if(this.title.equals(title)) return;
         this.title = title;
+        markPersistenceUpdate();
+    }
+
+    @Override
+    public String getCharger() {
+        return this.charger;
+    }
+
+    @Override
+    public void setCharger(String charger) {
+        if(this.charger.equals(charger)) return;
+        this.charger = charger;
         markPersistenceUpdate();
     }
 
@@ -183,14 +191,14 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public Set<String> getCharger() {
-        return this.charger;
+    public Set<String> getDealer() {
+        return this.dealer;
     }
 
     @Override
-    public void setCharger(Set<String> charger) {
-        if(this.charger.toString().equals(charger.toString())) return;
-        this.charger = charger;
+    public void setDealer(Set<String> dealer) {
+        if(this.dealer.toString().equals(dealer.toString())) return;
+        this.dealer = dealer;
         markPersistenceUpdate();
     }
 
@@ -211,44 +219,37 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public Date getStart() {
-        return this.start;
+    public Date getWillingStartTime() {
+        return this.willingStartTime;
     }
 
     @Override
-    public void setStart(Date start) {
-        if(this.start.equals(start)) return;
-        this.start = start;
+    public void setWillingStartTime(Date willingStartTime) {
+        if(this.willingStartTime.equals(willingStartTime)) return;
+        this.willingStartTime = willingStartTime;
         markPersistenceUpdate();
     }
 
     @Override
-    public Date getEnd() {
-        return this.end;
+    public Date getWillingEndTime() {
+        return this.willingEndTime;
     }
 
     @Override
-    public void setEnd(Date end) {
-        if(this.end.equals(end)) return;
-        this.end = end;
+    public void setWillingEndTime(Date willingEndTime) {
+        if(this.willingEndTime.equals(willingEndTime)) return;
+        this.willingEndTime = willingEndTime;
         markPersistenceUpdate();
     }
 
     @Override
     public Date getEndTime() {
-        return this.endtime;
-    }
-
-    @Override
-    public void setEndTime(Date endTime) {
-        if(this.endtime.equals(endTime)) return;
-        this.endtime = endTime;
-        markPersistenceUpdate();
+        return this.endTime;
     }
 
     @Override
     public Date getCreateTime() {
-        return this.creattime;
+        return this.createTime;
     }
 
     @Override
@@ -298,7 +299,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_EVALUATING.getName());
         }
         this.status = STATUS_EVALUATING.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_EVALUATING.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_EVALUATING.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -312,7 +313,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_PLANNING.getName());
         }
         this.status = STATUS_PLANNING.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_PLANNING.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_PLANNING.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -326,7 +327,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_ToBeDeveloped.getName());
         }
         this.status = STATUS_ToBeDeveloped.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeDeveloped.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeDeveloped.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -340,7 +341,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_DEVELOPING.getName());
         }
         this.status = STATUS_DEVELOPING.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_DEVELOPING.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_DEVELOPING.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -354,7 +355,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_ToBeTested.getName());
         }
         this.status = STATUS_ToBeTested.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeTested.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ToBeTested.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -368,7 +369,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_TESTING.getName());
         }
         this.status = STATUS_TESTING.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_TESTING.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_TESTING.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -382,7 +383,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_TESTED.getName());
         }
         this.status = STATUS_TESTED.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_TESTED.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_TESTED.getName(), "");
         markPersistenceUpdate();
     }
 
@@ -396,8 +397,8 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_ONLINE.getName());
         }
         this.status = STATUS_ONLINE.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ONLINE.getName(), "");
-        this.endtime = new Date(System.currentTimeMillis());
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ONLINE.getName(), "");
+        this.endTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
 
@@ -412,8 +413,8 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_REJECTED.getName());
         }
         this.status = STATUS_REJECTED.id;
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_REJECTED.getName(), "");
-        this.endtime = new Date(System.currentTimeMillis());
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_REJECTED.getName(), "");
+        this.endTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
 
@@ -427,9 +428,9 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
                 &&  this.status != STATUS_TESTING.id && this.status != STATUS_TESTED.id) {
             throw new StatusException(STATUS.get(this.status).getName()+"不能扭转为"+STATUS_HANGED.getName());
         }
-        getBusinessDi().writeLog(getId(), getUser(),"状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_HANGED.getName(), "");
+        getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_HANGED.getName(), "");
         this.status = STATUS_HANGED.id;
-        this.endtime = new Date(System.currentTimeMillis());
+        this.endTime = new Date(System.currentTimeMillis());
         markPersistenceUpdate();
     }
 
@@ -438,7 +439,6 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      * @param
      * @return
      */
-
     @Override
     public void delete() {
         this.status = STATUS_DELETED.id;
@@ -453,7 +453,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
 
     @Override
-    public void dropTagForDemand(String demandId) throws StatusException {
+    public void dropTagForDemand(String demandId) throws TagException {
         getBusinessDi().dropTagForDemand(demandId);
     }
 

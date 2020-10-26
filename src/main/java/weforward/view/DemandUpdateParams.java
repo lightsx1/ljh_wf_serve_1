@@ -1,16 +1,15 @@
-package weforward.View;
+package weforward.view;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @DocObject(description = "更新任务参数")
 public class DemandUpdateParams extends DemandParams{
 
-    protected String m_Id;
+    protected String id;
 
     protected String title;
 
@@ -18,7 +17,7 @@ public class DemandUpdateParams extends DemandParams{
 
     protected int priority;
 
-    protected List<String> charger;
+    protected List<String> dealer;
 
     protected Date start;
 
@@ -42,30 +41,31 @@ public class DemandUpdateParams extends DemandParams{
         this.description = description;
     }
 
-    @DocAttribute(  description = "任务负责人", example = "负责人1")
-    public List<String> getCharger() {
-        return this.charger;
+    @DocAttribute(  description = "任务处理人", example = "负责人1")
+    public List<String> getDealer() {
+        return this.dealer;
     }
 
-    public void setCharger(List<String> charger) {
-        this.charger = charger;
+    public void setDealer(List<String> dealer) {
+        this.dealer = dealer;
     }
+
 
     @DocAttribute(  description = "任务预计开始时间", example = "2019-11-29T00:30:00.666Z")
-    public Date getStart() {
+    public Date getWillingStartTime() {
         return this.start;
     }
 
-    public void setStart(Date start) {
-        this.start = start;
+    public void setWillingStartTime(Date willingStartTime) {
+        this.start = willingStartTime;
     }
 
-    @DocAttribute(  description = "任务预计结束时间", example = "2019-10-29T00:30:00.666Z")
-    public Date getEnd() {
+    @DocAttribute(  description = "任务预计结束时间", example = "2019-12-29T00:30:00.666Z")
+    public Date getWillingEndTime() {
         return this.end;
     }
 
-    public void setEnd(Date End) {
+    public void setWillingEndTime(Date End) {
         this.end = End;
     }
 
@@ -79,11 +79,11 @@ public class DemandUpdateParams extends DemandParams{
     }
 
     public void setId(String id) {
-        m_Id = id;
+        this.id = id;
     }
 
     @DocAttribute(necessary = true, description = "任务id")
     public String getId() {
-        return m_Id;
+        return id;
     }
 }

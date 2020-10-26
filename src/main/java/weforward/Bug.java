@@ -5,7 +5,7 @@ import cn.weforward.common.NameItems;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.log.BusinessLog;
-import weforward.Exception.StatusException;
+import weforward.exception.StatusException;
 
 import java.util.Date;
 
@@ -46,8 +46,6 @@ public interface Bug {
 
     NameItem getStatus();
 
-    void setStatus(int status);
-
     String getTester();
 
     void setTester(String tester);
@@ -60,23 +58,33 @@ public interface Bug {
 
     Date getLastTime();
 
+    /*将当前的状态扭转为待修正*/
     void toBeCorrected() throws StatusException;
 
+    /*将当前的状态扭转为待复测*/
     void toBeRested() throws StatusException;
 
+    /*将当前的状态扭转为建议不做修改*/
     void toSuggest() throws StatusException;
 
+    /*将当前的状态扭转为申请无法解决*/
     void toApply() throws StatusException;
 
+    /*将当前的状态扭转为已解决*/
     void toDone() throws StatusException;
 
+    /*将当前的状态扭转为不做修改*/
     void toNone() throws StatusException;
 
+    /*将当前的状态扭转为无法解决*/
     void toCant() throws StatusException;
 
+    /*将当前的状态扭转为重新打开*/
     void toReopened() throws StatusException;
 
+    /*返回当前的解决状态，true = 已解决， false = 为解决，默认为false*/
     boolean isDealed();
 
+    /*获取缺陷日志*/
     ResultPage<BusinessLog> getLogs();
 }

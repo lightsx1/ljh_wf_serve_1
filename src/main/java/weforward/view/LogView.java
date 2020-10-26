@@ -1,4 +1,4 @@
-package weforward.View;
+package weforward.view;
 
 import java.util.Date;
 

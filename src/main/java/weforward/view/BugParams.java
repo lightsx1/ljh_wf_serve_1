@@ -1,12 +1,7 @@
-package weforward.View;
+package weforward.view;
 
-import cn.weforward.data.UniteId;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
-import weforward.Di.DemandDi;
-
-import javax.annotation.Resource;
-import java.util.Date;
 
 @DocObject(description = "缺陷信息")
 public class BugParams {

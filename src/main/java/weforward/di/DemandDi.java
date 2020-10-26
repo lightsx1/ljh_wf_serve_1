@@ -1,4 +1,4 @@
-package weforward.Di;
+package weforward.di;
 
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
@@ -6,11 +6,14 @@ import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.BusinessDi;
 import weforward.Bug;
 import weforward.Demand;
+import weforward.exception.DemandException;
+import weforward.exception.TagException;
 import weforward.Tag;
-import weforward.Exception.StatusException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public interface DemandDi extends BusinessDi{
@@ -46,7 +49,7 @@ public interface DemandDi extends BusinessDi{
      * @param what
      * @param note
      */
-    void writeLog(UniteId id, String user, String action, String what, String note);
+    void writeLog(UniteId id, String action, String what, String note);
 
     /**
      * 获取日志
@@ -69,7 +72,7 @@ public interface DemandDi extends BusinessDi{
      * @param demandId
      * @return
      */
-    void dropTagForDemand(String demandId) throws StatusException;
+    void dropTagForDemand(String demandId) throws TagException;
 
     /*
     *  新建缺陷
@@ -80,4 +83,5 @@ public interface DemandDi extends BusinessDi{
      *  缺陷分析
      * */
     List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp);
+
 }

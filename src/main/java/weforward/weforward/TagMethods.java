@@ -10,12 +10,8 @@ import cn.weforward.protocol.doc.annotation.DocMethod;
 import cn.weforward.protocol.doc.annotation.DocParameter;
 import cn.weforward.protocol.support.datatype.FriendlyObject;
 
-import weforward.Demand;
-import weforward.View.SonDemandView;
-import weforward.View.TagCreateView;
-import weforward.View.TagSearchView;
-import weforward.weforward.DemandServiceCode;
-import weforward.Exception.StatusException;
+import weforward.exception.TagException;
+import weforward.view.TagView;
 import weforward.DemandService;
 import weforward.Tag;
 
@@ -32,15 +28,14 @@ public class TagMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
     @DocMethod(description = "创建标签", index = 0)
-    public TagCreateView createTag(FriendlyObject params) throws ApiException {
+    public TagView createTag(FriendlyObject params) throws ApiException {
 
         String name = params.getString("name");
 
-        //*****************************************************
         ValidateUtil.isEmpty(name, "产品标题不能为空");
-        //*******************************************************
+
         Tag tag = demandService.createTag(name);
-        return TagCreateView.valueOf(tag);
+        return TagView.valueOf(tag);
     }
 
 
@@ -48,29 +43,47 @@ public class TagMethods implements ExceptionHandler {
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
     @DocMethod(description = "搜索标签", index = 1)
-    public ResultPage<TagSearchView> searchTagByName(FriendlyObject params) throws ApiException {
+    public ResultPage<TagView> searchTagByName(FriendlyObject params) {
         ResultPage<Tag> rp = demandService.searchTagByKeywords(params.getString("name"));
-        return new TransResultPage<TagSearchView, Tag>(rp) {
+        return new TransResultPage<TagView, Tag>(rp) {
             @Override
-            protected TagSearchView trans(Tag src) {
-                return TagSearchView.valueOf(src);
+            protected TagView trans(Tag src) {
+                return TagView.valueOf(src);
             }
         };
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签名称"))
+    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签id"))
     @DocMethod(description = "删除标签", index = 2)
-    public String deleteTag(FriendlyObject params) throws ApiException, StatusException {
-        demandService.deleteTag(params.getString("id"));
+    public String deleteTag(FriendlyObject params) throws TagException {
+        demandService.deleteTag(params.getString("name"));
         return "删除成功";
+    }
+
+    @KeepServiceOrigin
+    @WeforwardMethod
+    @DocParameter({@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签id"), @DocAttribute(name = "name", type = String.class, necessary = true, description = "修改后标签名称")})
+    @DocMethod(description = "更改标签", index = 3)
+    public TagView updateTag(FriendlyObject params) throws TagException, ApiException {
+
+        String id = params.getString("id");
+        String name = params.getString("name");
+
+        ValidateUtil.isEmpty(id, "标签id不能为空");
+        ValidateUtil.isEmpty(name, "修改后标签名称不能为空");
+
+        Tag tag = demandService.getTag(id);
+        tag.setName(name);
+
+        return TagView.valueOf(tag);
     }
 
     @Override
     public Throwable exception(Throwable error) {
-        if( error instanceof StatusException){
-            return new ApiException(DemandServiceCode.getCode((StatusException) error), error.getMessage());
+        if (error instanceof Exception) {
+            return new ApiException(DemandServiceCode.getCode((Exception) error), error.getMessage());
         }
         return error;
     }

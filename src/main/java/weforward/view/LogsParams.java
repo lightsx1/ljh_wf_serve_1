@@ -1,4 +1,4 @@
-package weforward.View;
+package weforward.view;
 
 import cn.weforward.framework.doc.DocPageParams;
 import cn.weforward.protocol.doc.annotation.DocAttribute;

@@ -1,4 +1,4 @@
-package weforward.View;
+package weforward.view;
 
 import cn.weforward.framework.doc.DocPageParams;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
@@ -16,7 +16,7 @@ public class DemandSearchParams extends DocPageParams {
         this.keywords = keywords;
     }
 
-    @DocAttribute(description = "搜索关键字")
+    @DocAttribute(description = "搜索关键字,关键字可以是任务标题,负责人,跟进人或者创建人,且都为模糊搜索")
     public String getKeywords() {
         return keywords;
     }
@@ -25,7 +25,7 @@ public class DemandSearchParams extends DocPageParams {
         this.option = option;
     }
 
-    @DocAttribute(description = "任务状态 1=未完成 ,2=已完成, 其他数字为全部",example = "0")
+    @DocAttribute(description = "任务状态 1=未完成 ,2=已完成, 0为全部",example = "0")
     public int getOption() {
         return option;
     }

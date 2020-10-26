@@ -1,11 +1,10 @@
-package weforward.View;
+package weforward.view;
 
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 import weforward.Demand;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @DocObject(description = "子任务视图")
@@ -38,35 +37,26 @@ public class SonDemandView {
         return demand.getTitle();
     }
 
-    @DocAttribute(description = "任务详情")
-    public String getDescription() {
-        return demand.getDescription();
-    }
-
 
     @DocAttribute(description = "任务负责人")
     public Set<String> getCharger() {
-        return demand.getCharger();
+        return demand.getDealer();
     }
-
 
     @DocAttribute(description = "任务跟进人")
     public String getFollower() {
         return demand.getFollower();
     }
 
-
     @DocAttribute(description = "任务预计开始时间")
     public Date getStart() {
-        return demand.getStart();
+        return demand.getWillingStartTime();
     }
-
 
     @DocAttribute(description = "任务预计结束时间")
     public Date getEnd() {
-        return demand.getEnd();
+        return demand.getWillingEndTime();
     }
-
 
     @DocAttribute(description = "任务优先级")
     public String getPriority(){
@@ -78,7 +68,7 @@ public class SonDemandView {
         return demand.getStatus().getName();
     }
 
-    @DocAttribute(description = "标签id")
+    @DocAttribute(description = "所属标签id")
     public String getTag(){
         return demand.getTagId();
     }
