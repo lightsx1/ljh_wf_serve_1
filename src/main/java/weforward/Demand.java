@@ -5,13 +5,13 @@ import cn.weforward.common.NameItems;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.log.BusinessLog;
+import cn.weforward.framework.ApiException;
 import weforward.di.DemandDi;
 import weforward.exception.StatusException;
 import weforward.exception.TagException;
+import weforward.view.DemandAnalysisView;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -90,13 +90,15 @@ public interface Demand {
 
     void setDealer(Set<String> Charger);
 
-    String getFollower();
+    Set<String> getFollower();
 
     String getCharger();
 
     void setCharger(String charger);
 
     void follow(String user);
+
+    void disFollow(String follower) throws ApiException;
 
     Date getWillingStartTime();
 
@@ -123,6 +125,9 @@ public interface Demand {
     String getTagId();
 
     void setTagId(String tagId);
+
+    /** 新建子任务时写入父任务日志中*/
+    void writeSonLog();
 
     /** 将当前的状态扭转为评估中*/
     void toEvaluating() throws StatusException;
@@ -158,7 +163,7 @@ public interface Demand {
     void delete();
 
     /** 为当前任务添加标签*/
-    void addTagForDemand(String demandId, String tagId);
+    void addTagForDemand(String tagId);
 
     /** 删除当前任务的标签*/
     void dropTagForDemand(String demandId) throws TagException;
@@ -172,7 +177,7 @@ public interface Demand {
      * 第三个map存储测试人员和对应处理数
      * 第四个map存储处理人员和对应的处理数
      * */
-    List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp);
+    DemandAnalysisView analysis(ResultPage<? extends Bug> rp);
 
     /** 获得日志*/
     ResultPage<BusinessLog> getLogs();

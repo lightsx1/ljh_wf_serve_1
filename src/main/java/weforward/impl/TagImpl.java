@@ -14,7 +14,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
     @Resource
     protected String name;
 
-    /** 标签状态，1表示正常使用，2表示删除*/
+    /** 标签状态，1代表正常使用，2代表已经被删除*/
     @Resource
     protected int status;
 
@@ -25,7 +25,7 @@ public class TagImpl extends AbstractPersistent<DemandDi> implements Tag{
 
     public TagImpl(DemandDi di ,String name) {
         super(di);
-        genPersistenceId("tag");
+        genPersistenceId();
         this.name = name;
         this.status = 1;
         markPersistenceUpdate();

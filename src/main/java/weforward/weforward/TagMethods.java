@@ -26,11 +26,11 @@ public class TagMethods implements ExceptionHandler {
 
 
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
+    @DocParameter(@DocAttribute(name = "tagName", type = String.class, necessary = true, description = "标签名称"))
     @DocMethod(description = "创建标签", index = 0)
     public TagView createTag(FriendlyObject params) throws ApiException {
 
-        String name = params.getString("name");
+        String name = params.getString("tagName");
 
         ValidateUtil.isEmpty(name, "产品标题不能为空");
 
@@ -41,10 +41,10 @@ public class TagMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "name", type = String.class, necessary = true, description = "标签名称"))
-    @DocMethod(description = "搜索标签", index = 1)
+    @DocParameter(@DocAttribute(name = "tagName", type = String.class, necessary = true, description = "标签名称"))
+    @DocMethod(description = "根据标签名称模糊搜索标签", index = 1)
     public ResultPage<TagView> searchTagByName(FriendlyObject params) {
-        ResultPage<Tag> rp = demandService.searchTagByKeywords(params.getString("name"));
+        ResultPage<Tag> rp = demandService.searchTagByKeywords(params.getString("tagName"));
         return new TransResultPage<TagView, Tag>(rp) {
             @Override
             protected TagView trans(Tag src) {
@@ -55,21 +55,21 @@ public class TagMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签id"))
+    @DocParameter(@DocAttribute(name = "tagId", type = String.class, necessary = true, description = "标签id"))
     @DocMethod(description = "删除标签", index = 2)
     public String deleteTag(FriendlyObject params) throws TagException {
-        demandService.deleteTag(params.getString("name"));
+        demandService.deleteTag(params.getString("tagId"));
         return "删除成功";
     }
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter({@DocAttribute(name = "id", type = String.class, necessary = true, description = "标签id"), @DocAttribute(name = "name", type = String.class, necessary = true, description = "修改后标签名称")})
+    @DocParameter({@DocAttribute(name = "tagId", type = String.class, necessary = true, description = "标签id"), @DocAttribute(name = "tagName", type = String.class, necessary = true, description = "修改后标签名称")})
     @DocMethod(description = "更改标签", index = 3)
     public TagView updateTag(FriendlyObject params) throws TagException, ApiException {
 
-        String id = params.getString("id");
-        String name = params.getString("name");
+        String id = params.getString("tagId");
+        String name = params.getString("tagName");
 
         ValidateUtil.isEmpty(id, "标签id不能为空");
         ValidateUtil.isEmpty(name, "修改后标签名称不能为空");

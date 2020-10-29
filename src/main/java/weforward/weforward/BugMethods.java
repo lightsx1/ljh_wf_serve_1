@@ -46,14 +46,13 @@ public class BugMethods implements ExceptionHandler {
         String dealer = params.getDealer();
         String version = params.getVersion();
 
-        //*****************************************************
         ValidateUtil.isEmpty(demandId, "缺陷id不能为空");
         ValidateUtil.isEmpty(description, "缺陷详情不能为空");
         ValidateUtil.isEmpty(priority, "缺陷严重性不能为空");
         ValidateUtil.isEmpty(dealer, "缺陷处理人不能为空");
         ValidateUtil.isEmpty(version, "版本与平台不能为空");
-        //*******************************************************
-        Bug bug = demandService.createBug(getUser(), demandId, description, priority, dealer,version);
+
+        Bug bug = demandService.createBug(getUser(), demandId, description, priority, dealer, version);
         return BugView.valueOf(bug);
     }
 
@@ -62,13 +61,9 @@ public class BugMethods implements ExceptionHandler {
     @DocMethod(description = "更新缺陷", index = 4)
     public BugView updateBug(BugUpdateParams params) throws ApiException {
 
-        String bugId =params.getBugId();
+        String bugId = params.getBugId();
         ValidateUtil.isEmpty(bugId, "缺陷id不能为空");
         Bug bug = demandService.getBug(bugId);
-
-        if (null == bug) {
-            return null;
-        }
 
         String description = params.getDescription();
         if (!StringUtil.isEmpty(description)) {
@@ -95,13 +90,27 @@ public class BugMethods implements ExceptionHandler {
 
 
     @WeforwardMethod
-    @DocParameter({@DocAttribute(name = "id", type = String.class, necessary = true, description = "任务id"),@DocAttribute(name = "keyword", type = String.class, necessary = true, description = "关键字")})
     @DocMethod(description = "根据任务Id搜索Bug", index = 1)
-    public TransResultPage<BugView, Bug> searchBugsByDemandId(FriendlyObject params) throws ApiException {
-        String id =params.getString("id");
-        String keyword = params.getString("keyword");
+    public TransResultPage<BugView, Bug> searchBugsByDemandId(BugSearchParams params) throws ApiException {
+        String id = params.getDemandId();
+        String keyword = params.getKeyword();
+        String tester = params.getTester();
+        String dealer = params.getDealer();
+        Integer option = params.getOption();
+
         ValidateUtil.isEmpty(id, "任务id不能为空");
-        ResultPage <Bug> rp =demandService.searchBugByDemandId(id,keyword);
+        if (option == null) {
+            option = 0;
+        }
+
+        if(keyword == null || keyword==""){
+            keyword= "";
+        }
+
+        if(option != 0 && option != 1 && option != 2){
+            throw new ApiException(ApiException.CODE_INTERNAL_ERROR,"缺陷状态只能为0、1、2");
+        }
+        ResultPage<Bug> rp = demandService.searchBugByDemandId(id, keyword, tester, dealer, option);
 
         return new TransResultPage<BugView, Bug>(rp) {
             @Override
@@ -112,19 +121,28 @@ public class BugMethods implements ExceptionHandler {
     }
 
 
-
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "根据id获取单个缺陷", index = 2)
-        public BugView getBugByBugId(FriendlyObject params) throws ApiException {
-        String id =params.getString("id");
+    public BugView getBugByBugId(FriendlyObject params) throws ApiException {
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         return BugView.valueOf(bug);
     }
 
-    
+    @KeepServiceOrigin
+    @WeforwardMethod
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
+    @DocMethod(description = "跟进缺陷", index = 2)
+    public void followBug(FriendlyObject params) throws ApiException {
+        String id = params.getString("bugId");
+        ValidateUtil.isEmpty(id, "缺陷id不能为空");
+        demandService.followBug(id,getUser());
+    }
+
+
     @WeforwardMethod
     @DocMethod(description = "获取缺陷日志", index = 4)
     public ResultPage<LogView> getBugLogs(LogsParams params) throws ApiException {
@@ -142,10 +160,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为待修正", index = 5)
     public BugView statusTurnToBeCorrected(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toBeCorrected();
@@ -154,10 +172,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为待复测", index = 6)
     public BugView statusTurnToBeRested(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toBeRested();
@@ -166,10 +184,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为建议不做修改", index = 7)
     public BugView statusTurnToSuggest(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toSuggest();
@@ -178,10 +196,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为申请无法解决", index = 8)
     public BugView statusTurnToApply(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toApply();
@@ -190,10 +208,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为已解决", index = 9)
     public BugView statusTurnToDone(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toDone();
@@ -202,10 +220,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为不做修改", index = 10)
     public BugView statusTurnToNone(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toNone();
@@ -214,10 +232,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为无法解决", index = 11)
     public BugView statusTurnToCant(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toCant();
@@ -226,10 +244,10 @@ public class BugMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "id", type = String.class, necessary = true, description = "缺陷id"))
+    @DocParameter(@DocAttribute(name = "bugId", type = String.class, necessary = true, description = "缺陷id"))
     @DocMethod(description = "状态扭转为重新打开", index = 12)
     public BugView statusTurnToReopened(FriendlyObject params) throws ApiException, StatusException {
-        String id =params.getString("id");
+        String id = params.getString("bugId");
         ValidateUtil.isEmpty(id, "缺陷id不能为空");
         Bug bug = demandService.getBug(id);
         bug.toReopened();

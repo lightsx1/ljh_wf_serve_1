@@ -5,7 +5,6 @@ import cn.weforward.protocol.doc.annotation.DocObject;
 import weforward.Demand;
 
 import java.util.Date;
-import java.util.Set;
 
 @DocObject(description = "任务视图")
 public class DemandSearchView {
@@ -24,7 +23,7 @@ public class DemandSearchView {
 
     @DocAttribute(description = "任务id")
     public String getId() {
-        return demand.getId().getOrdinal();
+        return demand.getId().getId();
     }
 
     @DocAttribute(description = "任务标题")
@@ -38,8 +37,8 @@ public class DemandSearchView {
     }
 
     @DocAttribute(description = "任务负责人")
-    public Set<String> getCharger() {
-        return demand.getDealer();
+    public String getCharger() {
+        return demand.getCharger();
     }
 
     @DocAttribute(description = "任务优先级")
@@ -53,7 +52,7 @@ public class DemandSearchView {
     }
 
     @DocAttribute(description = "任务结束时间")
-    public Date getEndTime() {
+    public Date getWillingEndTime() {
         return demand.getWillingEndTime();
     }
 

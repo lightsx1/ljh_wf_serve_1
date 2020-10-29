@@ -37,6 +37,9 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     protected String dealer;
 
     @Resource
+    protected String follower;
+
+    @Resource
     protected String creator;
 
     @Resource
@@ -53,7 +56,7 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
     public BugImpl(DemandDi di, String user, String demandId, String description, String priority, String dealer, String version) {
         super(di);
-        genPersistenceId("bug");
+        genPersistenceId();
         this.demandId = demandId;
         this.description = description;
         this.priority = priority;
@@ -105,7 +108,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         return STATUS.get(this.status);
     }
 
-
     @Override
     public boolean isDealed() {
         return isDealed;
@@ -139,19 +141,19 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         return creator;
     }
 
-
     @Override
     public Date getLastTime() {
         return lastTime;
     }
 
+    @Override
+    public void follow(String follower){
+        this.follower = follower;
+    }
+
 
     @Override
     public void toBeCorrected() throws StatusException {
-
-        if (STATUS.get(this.status).id == STATUS_ToBeCorrected.id) {
-            return;
-        }
 
         if (this.status != STATUS_ToBeRested.id && this.status != STATUS_SUGGEST.id && this.status != STATUS_APPLY.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_ToBeCorrected.getName());
@@ -165,10 +167,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     @Override
     public void toBeRested() throws StatusException {
 
-        if (STATUS.get(this.status).id == STATUS_ToBeRested.id) {
-            return;
-        }
-
         if (this.status != STATUS_ToBeCorrected.id && this.status != STATUS_REOPENED.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_ToBeRested.getName());
         }
@@ -180,10 +178,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
     @Override
     public void toSuggest() throws StatusException {
-
-        if (STATUS.get(this.status).id == STATUS_SUGGEST.id) {
-            return;
-        }
 
         if (this.status != STATUS_ToBeCorrected.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_SUGGEST.getName());
@@ -197,10 +191,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     @Override
     public void toApply() throws StatusException {
 
-        if (STATUS.get(this.status).id == STATUS_APPLY.id) {
-            return;
-        }
-
         if (this.status != STATUS_ToBeCorrected.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_APPLY.getName());
         }
@@ -212,10 +202,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
     @Override
     public void toDone() throws StatusException {
-
-        if (STATUS.get(this.status).id == STATUS_DONE.id) {
-            return;
-        }
 
         if (this.status != STATUS_ToBeRested.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_DONE.getName());
@@ -230,10 +216,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     @Override
     public void toNone() throws StatusException {
 
-        if (STATUS.get(this.status).id == STATUS_NONE.id) {
-            return;
-        }
-
         if (this.status != STATUS_SUGGEST.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_NONE.getName());
         }
@@ -247,10 +229,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     @Override
     public void toCant() throws StatusException {
 
-        if (STATUS.get(this.status).id == STATUS_CANT.id) {
-            return;
-        }
-
         if (this.status != STATUS_APPLY.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_CANT.getName());
         }
@@ -263,11 +241,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
     @Override
     public void toReopened() throws StatusException {
-
-        if (STATUS.get(this.status).id == STATUS_REOPENED.id) {
-            return;
-        }
-
         if (this.status != STATUS_DONE.id && this.status != STATUS_NONE.id && this.status != STATUS_CANT.id) {
             throw new StatusException(STATUS.get(this.status).getName() + "不能扭转为" + STATUS_REOPENED.getName());
         }
@@ -276,15 +249,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
         this.lastTime = new Date(System.currentTimeMillis());
         this.isDealed = false;
         markPersistenceUpdate();
-    }
-
-
-    private String getUser() {
-        String user = Global.TLS.getValue("user");
-        if (null == user) {
-            user = "admin";
-        }
-        return user;
     }
 
     @Override

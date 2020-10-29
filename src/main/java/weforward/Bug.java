@@ -58,6 +58,8 @@ public interface Bug {
 
     Date getLastTime();
 
+    void follow(String follower);
+
     /*将当前的状态扭转为待修正*/
     void toBeCorrected() throws StatusException;
 

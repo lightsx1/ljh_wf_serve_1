@@ -20,8 +20,8 @@
 	</properties>
 
 	<scm>
-		<url>http://svn.navboy.com/omnigis/[yourproject]/ljh_wf_serve_1/trunk/</url>
-		<tag>http://svn.navboy.com/omnigis/[yourproject]/ljh_wf_serve_1/tags</tag>
+		<url>https://github.com/lightsx1/ljh_wf_serve_1.git</url>
+		<tag>https://github.com/lightsx1/ljh_wf_serve_1.git</tag>
 	</scm>
 
 	<dependencies>

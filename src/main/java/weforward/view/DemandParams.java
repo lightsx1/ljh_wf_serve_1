@@ -6,7 +6,7 @@ import cn.weforward.protocol.doc.annotation.DocObject;
 import java.util.Date;
 import java.util.List;
 
-@DocObject(description = "任务信息")
+@DocObject(description = "任务信息参数")
 public class DemandParams {
 
     protected String title;
@@ -24,8 +24,6 @@ public class DemandParams {
     protected Date willingEndTime;
 
     protected List<String> dealer;
-
-
 
     @DocAttribute(necessary = true, description = "任务标题", example = "标题1")
     public String getTitle() {

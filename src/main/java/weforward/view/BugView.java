@@ -21,7 +21,7 @@ public class BugView {
 
     @DocAttribute(description = "缺陷id")
     public String getId() {
-        return bug.getId().getOrdinal();
+        return bug.getId().getId();
     }
 
     @DocAttribute(description = "缺陷详情")

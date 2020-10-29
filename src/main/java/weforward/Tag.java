@@ -23,5 +23,4 @@ public interface Tag {
 
     void deleteTag() throws TagException;
 
-
 }

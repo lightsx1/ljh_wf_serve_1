@@ -20,7 +20,7 @@ public class TagView {
 
     @DocAttribute(description = "标签id")
     public String getId() {
-        return tag.getId().getOrdinal();
+        return tag.getId().getId();
     }
 
     @DocAttribute(description = "标签名称")

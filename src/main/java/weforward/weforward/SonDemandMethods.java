@@ -62,10 +62,10 @@ public class SonDemandMethods implements ExceptionHandler {
 
     @KeepServiceOrigin
     @WeforwardMethod
-    @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "父任务id"))
+    @DocParameter(@DocAttribute(name = "fatherDemandId", type = String.class, necessary = true, description = "父任务id"))
     @DocMethod(description = "查询一个父任务下的所有子任务", index = 1 )
-    public ResultPage<SonDemandView> searchSonDemand(FriendlyObject params) throws ApiException, DemandException {
-        ResultPage<Demand> rp = demandService.searchSonDemand(params.getString("demandId"));
+    public ResultPage<SonDemandView> getSonDemandsByFatherDemandId(FriendlyObject params) throws ApiException, DemandException {
+        ResultPage<Demand> rp = demandService.searchSonDemand(params.getString("fatherDemandId"));
         return new TransResultPage<SonDemandView, Demand>(rp) {
             @Override
             protected SonDemandView trans(Demand src) {

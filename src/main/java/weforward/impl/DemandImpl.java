@@ -3,14 +3,16 @@ package weforward.impl;
 import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
+import cn.weforward.data.annotation.Index;
 import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.support.AbstractPersistent;
-import cn.weforward.framework.support.Global;
+import cn.weforward.framework.ApiException;
 import weforward.Bug;
 import weforward.Demand;
 import weforward.di.DemandDi;
 import weforward.exception.StatusException;
 import weforward.exception.TagException;
+import weforward.view.DemandAnalysisView;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -19,6 +21,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*任务父任务Id*/
     @Resource
+    @Index
     protected String fid;
 
     /*任务标题*/
@@ -35,7 +38,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*任务处理人*/
     @Resource
-    protected Set<String> dealer;
+    protected Set<String> dealer = new HashSet<>();
 
     /*任务负责人*/
     @Resource
@@ -43,7 +46,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*任务跟进人*/
     @Resource
-    protected String follower;
+    protected Set<String> follower = new HashSet<>();
 
     /*任务预期开始时间*/
     @Resource
@@ -71,7 +74,10 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     /*所属标签Id*/
     @Resource
+    @Index
     protected String tagId;
+
+    protected List <String> whichStatusCanTurnto = new ArrayList<>();
 
     protected DemandImpl(DemandDi di) {
         super(di);
@@ -94,7 +100,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     public DemandImpl(DemandDi di, String user, String title, String description, int priority, String charger, Set<String> dealer,
                       Date willingStartTime, Date willingEndTime, String tagId) {
         super(di);
-        genPersistenceId("demand");
+        genPersistenceId();
         this.title = title;
         this.description = description;
         this.priority = PRIORITY.get(priority).id;
@@ -102,7 +108,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         this.willingStartTime = willingStartTime;
         this.willingEndTime = willingEndTime;
         this.status = STATUS_EVALUATING.id;
-        this.createTime = new Date(System.currentTimeMillis());
+        this.createTime = new Date();
         this.creator = user;
         this.fid = null;
         this.tagId = tagId;
@@ -128,7 +134,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     public DemandImpl(DemandDi di, String user, String fid, String title, String description, int priority, String charger, Set<String> dealer,
                       Date willingStartTime, Date willingEndTime) {
         super(di);
-        genPersistenceId("sonDemand");
+        genPersistenceId();
         this.fid = fid;
         this.title = title;
         this.description = description;
@@ -137,7 +143,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         this.willingStartTime = willingStartTime;
         this.willingEndTime = willingEndTime;
         this.status = STATUS_EVALUATING.id;
-        this.createTime = new Date(System.currentTimeMillis());
+        this.createTime = new Date();
         this.creator = user;
         this.dealer = dealer;
         markPersistenceUpdate();
@@ -147,6 +153,10 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public UniteId getId() {
         return getPersistenceId();
+    }
+
+    public void writeSonLog() {
+        getBusinessDi().writeLog(getId(), "创建了一个新的子任务", "", "");
     }
 
     @Override
@@ -162,6 +172,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setTitle(String title) {
         if(this.title.equals(title)) return;
+        getBusinessDi().writeLog(getId(), "修改标题", "标题从 "+this.title +" 修改为："+title, "");
         this.title = title;
         markPersistenceUpdate();
     }
@@ -174,6 +185,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setCharger(String charger) {
         if(this.charger.equals(charger)) return;
+        getBusinessDi().writeLog(getId(), "修改负责人", "负责人从 "+this.charger +" 修改为："+charger, "");
         this.charger = charger;
         markPersistenceUpdate();
     }
@@ -186,6 +198,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setDescription(String description) {
         if(this.description.equals(description)) return;
+        getBusinessDi().writeLog(getId(), "修改具体描述", "原具体描述：  "+this.description +" \n 修改为："+description, "");
         this.description = description;
         markPersistenceUpdate();
     }
@@ -198,23 +211,38 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setDealer(Set<String> dealer) {
         if(this.dealer.toString().equals(dealer.toString())) return;
+        getBusinessDi().writeLog(getId(), "修改处理人", "原处理人：  "+this.dealer +"\n修改为："+dealer, "");
         this.dealer = dealer;
         markPersistenceUpdate();
     }
 
     @Override
-    public String getFollower() {
+    public Set<String> getFollower() {
         return this.follower;
     }
 
     @Override
     public void follow(String follower) {
-        if(this.follower != null) {
-            if(this.follower.equals(follower)) {
-                return;
+        int size = this.follower.size();
+        this.follower.add(follower);
+        if(this.follower.size() != size){
+            getBusinessDi().writeLog(getId(), "跟进人添加", "添加了新的跟进人：  "+follower, "");
+            markPersistenceUpdate();
+        }
+    }
+
+    public void disFollow(String follower) throws ApiException {
+        if(!this.follower.contains(follower)){
+            throw new ApiException(ApiException.CODE_INTERNAL_ERROR,"该用户还没有跟进，不能取消跟进！");
+        }
+        Iterator iterator = this.follower.iterator();
+        while(iterator.hasNext()){
+            if(iterator.equals(follower)){
+                iterator.remove();
+                break;
             }
         }
-        this.follower = follower;
+        getBusinessDi().writeLog(getId(), "跟进人移除", "跟进人：  "+follower+" 不再跟进", "");
         markPersistenceUpdate();
     }
 
@@ -226,6 +254,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setWillingStartTime(Date willingStartTime) {
         if(this.willingStartTime.equals(willingStartTime)) return;
+        getBusinessDi().writeLog(getId(), "修改预期开始时间", "原预期开始时间：  "+this.willingStartTime +"  修改为："+willingStartTime, "");
         this.willingStartTime = willingStartTime;
         markPersistenceUpdate();
     }
@@ -238,6 +267,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setWillingEndTime(Date willingEndTime) {
         if(this.willingEndTime.equals(willingEndTime)) return;
+        getBusinessDi().writeLog(getId(), "修改预期结束时间", "原预期结束时间：  "+this.willingEndTime +"  修改为："+willingEndTime, "");
         this.willingEndTime = willingEndTime;
         markPersistenceUpdate();
     }
@@ -270,6 +300,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public void setPriority(int priority) {
         if(this.priority == priority) return;
+        getBusinessDi().writeLog(getId(), "修改优先级", "原优先级：  "+ PRIORITY.get(this.priority).getName() +"  修改为："+PRIORITY.get(priority).getName(), "");
         this.priority = priority;
         markPersistenceUpdate();
     }
@@ -398,7 +429,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         }
         this.status = STATUS_ONLINE.id;
         getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_ONLINE.getName(), "");
-        this.endTime = new Date(System.currentTimeMillis());
+        this.endTime = new Date();
         markPersistenceUpdate();
     }
 
@@ -414,7 +445,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         }
         this.status = STATUS_REJECTED.id;
         getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_REJECTED.getName(), "");
-        this.endTime = new Date(System.currentTimeMillis());
+        this.endTime = new Date();
         markPersistenceUpdate();
     }
 
@@ -430,7 +461,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         }
         getBusinessDi().writeLog(getId(), "状态扭转", "状态从"+STATUS.get(this.status).getName()+"扭转为"+STATUS_HANGED.getName(), "");
         this.status = STATUS_HANGED.id;
-        this.endTime = new Date(System.currentTimeMillis());
+        this.endTime = new Date();
         markPersistenceUpdate();
     }
 
@@ -441,20 +472,23 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
      */
     @Override
     public void delete() {
+        getBusinessDi().writeLog(getId(), "任务删除", "任务被删除", "");
         this.status = STATUS_DELETED.id;
         this.tagId = null;
         markPersistenceUpdate();
     }
 
     @Override
-    public void addTagForDemand(String demandId , String tagId){
-        getBusinessDi().addTagForDemand(demandId,tagId);
+    public void addTagForDemand(String tagId){
+        getBusinessDi().writeLog(getId(), "修改所属标签", "原标签id： "+ this.tagId +"  修改为："+ tagId, "");
+        this.tagId = null;
     }
 
 
     @Override
     public void dropTagForDemand(String demandId) throws TagException {
-        getBusinessDi().dropTagForDemand(demandId);
+        getBusinessDi().writeLog(getId(), "删除所属标签", "原标签id： "+ this.tagId +" 被清空", "");
+        this.tagId = null;
     }
 
     @Override
@@ -463,21 +497,13 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     }
 
     @Override
-    public List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp){
+    public DemandAnalysisView analysis(ResultPage<? extends Bug> rp){
         return getBusinessDi().analysis(rp);
     }
 
     @Override
     public ResultPage<BusinessLog> getLogs() {
         return getBusinessDi().getLogs(getId());
-    }
-
-    private String getUser() {
-        String user = Global.TLS.getValue("user");
-        if (null == user) {
-            user = "admin";
-        }
-        return user;
     }
 
 }

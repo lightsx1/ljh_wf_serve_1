@@ -13,10 +13,9 @@ import cn.weforward.framework.WeforwardSession;
 import cn.weforward.protocol.ops.User;
 import weforward.Bug;
 import weforward.Demand;
-import weforward.exception.DemandException;
-import weforward.exception.TagException;
 import weforward.Tag;
 import weforward.di.DemandDi;
+import weforward.view.DemandAnalysisView;
 
 import java.util.*;
 
@@ -68,25 +67,19 @@ public class DemandDiImpl implements DemandDi{
     }
 
     @Override
-    public void addTagForDemand(String demandId, String tagId) {
-        demandPersistent.get(demandId).setTagId(tagId);
-    }
-
-    @Override
-    public void dropTagForDemand(String demandId) throws TagException {
-        demandPersistent.get(demandId).setTagId(null);
-    }
-
-    @Override
     public Bug createBug(DemandDi di, String user, String demandId, String description, String priority, String dealer,String version){
         return new BugImpl(di, user, demandId, description, priority, dealer, version);
     }
 
     @Override
-    public List<Map<String, Integer>> analysis(ResultPage<? extends Bug> rp) {
+    public DemandAnalysisView analysis(ResultPage<? extends Bug> rp) {
 
-        List<Map<String,Integer>> list = new ArrayList<>();
-        HashMap<String,Integer> finishMap = new HashMap<>();
+        List<AnalysisData> finishList = new ArrayList<>();
+        List<AnalysisData> statusList = new ArrayList<>();
+        List<AnalysisData> testerList = new ArrayList<>();
+        List<AnalysisData> dealerList = new ArrayList<>();
+
+        HashMap <String,Integer> finishMap = new HashMap<>();
         HashMap <String,Integer> statusMap = new HashMap<>();
         HashMap <String,Integer> testerMap = new HashMap<>();
         HashMap <String,Integer> dealerMap = new HashMap<>();
@@ -198,6 +191,7 @@ public class DemandDiImpl implements DemandDi{
                 testerMap.put(tester,testerMap.get(tester)+1);
             }
 
+
             String dealer = bug.getDealer();
             if( dealerMap.get(dealer) ==null){
                 dealerMap.put(dealer,1);
@@ -206,17 +200,34 @@ public class DemandDiImpl implements DemandDi{
                 dealerMap.put(dealer,dealerMap.get(dealer)+1);
             }
         }
-        list.add(finishMap);
-        list.add(statusMap);
-        list.add(testerMap);
-        list.add(dealerMap);
-        return list;
+        for(Map.Entry<String, Integer> entry : finishMap.entrySet()){
+            AnalysisData data = new AnalysisData(entry.getKey(),entry.getValue());
+            finishList.add(data);
+        }
+
+        for(Map.Entry<String, Integer> entry : statusMap.entrySet()){
+            AnalysisData data = new AnalysisData(entry.getKey(),entry.getValue());
+            statusList.add(data);
+        }
+
+        for(Map.Entry<String, Integer> entry : testerMap.entrySet()){
+            AnalysisData data = new AnalysisData(entry.getKey(),entry.getValue());
+            testerList.add(data);
+        }
+
+        for(Map.Entry<String, Integer> entry : dealerMap.entrySet()){
+            AnalysisData data = new AnalysisData(entry.getKey(),entry.getValue());
+            dealerList.add(data);
+        }
+
+        return DemandAnalysisView.valueOf(finishList,statusList,testerList,dealerList);
     }
+
 
     @Override
     public void writeLog(UniteId id, String action, String what, String note) {
         User user = WeforwardSession.TLS.getOperator();
-        String author = null == user ? "system" : user.getName();
+        String author = null == user ? "admin" : user.getName();
         m_BusinessLogger.writeLog(id.getId(), author, action, what, note);
     }
 

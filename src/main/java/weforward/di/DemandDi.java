@@ -6,14 +6,11 @@ import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.BusinessDi;
 import weforward.Bug;
 import weforward.Demand;
-import weforward.exception.DemandException;
-import weforward.exception.TagException;
 import weforward.Tag;
+import weforward.impl.AnalysisData;
+import weforward.view.DemandAnalysisView;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 public interface DemandDi extends BusinessDi{
@@ -59,21 +56,6 @@ public interface DemandDi extends BusinessDi{
      */
     ResultPage<BusinessLog> getLogs(UniteId id);
 
-    /**
-     * 为任务添加标签
-     * @param demandId
-     * @param tagId
-     * @return
-     */
-    void addTagForDemand(String demandId , String tagId);
-
-    /**
-     * 为任务删除标签
-     * @param demandId
-     * @return
-     */
-    void dropTagForDemand(String demandId) throws TagException;
-
     /*
     *  新建缺陷
     * */
@@ -82,6 +64,6 @@ public interface DemandDi extends BusinessDi{
     /*
      *  缺陷分析
      * */
-    List <Map<String,Integer>> analysis(ResultPage<? extends Bug> rp);
+    DemandAnalysisView analysis(ResultPage<? extends Bug> rp);
 
 }

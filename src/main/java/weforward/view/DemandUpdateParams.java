@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 @DocObject(description = "更新任务参数")
-public class DemandUpdateParams extends DemandParams{
+public class DemandUpdateParams {
 
-    protected String id;
+    protected String demandId;
 
     protected String title;
 
@@ -19,9 +19,12 @@ public class DemandUpdateParams extends DemandParams{
 
     protected List<String> dealer;
 
-    protected Date start;
+    protected String charger;
 
-    protected Date end;
+    protected Date willingStartTime;
+
+    protected Date williingEndTime;
+
 
     @DocAttribute(  description = "任务标题", example = "标题1")
     public String getTitle() {
@@ -41,6 +44,15 @@ public class DemandUpdateParams extends DemandParams{
         this.description = description;
     }
 
+    @DocAttribute(  description = "任务负责人", example = "负责人1")
+    public String getCharger() {
+        return charger;
+    }
+
+    public void setCharger(String charger) {
+        this.charger = charger;
+    }
+
     @DocAttribute(  description = "任务处理人", example = "负责人1")
     public List<String> getDealer() {
         return this.dealer;
@@ -53,20 +65,20 @@ public class DemandUpdateParams extends DemandParams{
 
     @DocAttribute(  description = "任务预计开始时间", example = "2019-11-29T00:30:00.666Z")
     public Date getWillingStartTime() {
-        return this.start;
+        return this.willingStartTime;
     }
 
     public void setWillingStartTime(Date willingStartTime) {
-        this.start = willingStartTime;
+        this.willingStartTime = willingStartTime;
     }
 
     @DocAttribute(  description = "任务预计结束时间", example = "2019-12-29T00:30:00.666Z")
     public Date getWillingEndTime() {
-        return this.end;
+        return this.williingEndTime;
     }
 
     public void setWillingEndTime(Date End) {
-        this.end = End;
+        this.williingEndTime = End;
     }
 
     @DocAttribute(  description = "任务优先级", example = "1")
@@ -79,11 +91,11 @@ public class DemandUpdateParams extends DemandParams{
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.demandId = id;
     }
 
     @DocAttribute(necessary = true, description = "任务id")
     public String getId() {
-        return id;
+        return demandId;
     }
 }
