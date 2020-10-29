@@ -16,7 +16,6 @@ public class DemandView {
         this.demand  = demand;
     }
 
-
     public static DemandView valueOf(Demand demand) {
         return null == demand ? null : new DemandView(demand);
     }

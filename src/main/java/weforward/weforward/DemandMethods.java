@@ -396,7 +396,7 @@ public class DemandMethods implements ExceptionHandler {
     @KeepServiceOrigin
     @WeforwardMethod
     @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"))
-    @DocMethod(description = "将任务的预期结束时间清空", index = 22)
+    @DocMethod(description = "将任务的预期结束时间清空", index = 23)
     public DemandView disFollow(FriendlyObject params) throws ApiException, StatusException, DemandException {
         String id = params.getString("demandId");
         ValidateUtil.isEmpty(id, "id不能为空");

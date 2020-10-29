@@ -7,7 +7,6 @@ import weforward.Demand;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @DocObject(description = "子任务视图")
 public class SonDemandView {
@@ -45,10 +44,10 @@ public class SonDemandView {
         return demand.getCharger();
     }
 
-    @DocAttribute(description = "任务跟进人")
-    public List<String> getFollower() {
-        return new ArrayList<>(demand.getFollower());
-    }
+//    @DocAttribute(description = "任务跟进人")
+//    public List<String> getFollower() {
+//        return new ArrayList<>(demand.getFollower());
+//    }
 
     @DocAttribute(description = "任务预计开始时间")
     public Date getWillingStartTime() {

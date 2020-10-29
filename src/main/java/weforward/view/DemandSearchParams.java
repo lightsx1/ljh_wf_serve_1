@@ -4,7 +4,6 @@ import cn.weforward.framework.doc.DocPageParams;
 import cn.weforward.protocol.doc.annotation.DocAttribute;
 import cn.weforward.protocol.doc.annotation.DocObject;
 
-import java.util.List;
 
 
 @DocObject(description = "搜索参数")
