@@ -4,10 +4,10 @@
 	<packaging>jar</packaging>
 
 	<groupId>kk</groupId>
-	<artifactId>ljh_wf_serve_1</artifactId>
-	<version>1.0.2.959972M</version>
+	<artifactId>ljh_wf_serve_demand</artifactId>
+	<version>1.0.6.961064M</version>
 
-	<name>ljh_wf_serve_1</name>
+	<name>ljh_wf_serve_demand</name>
 	<url>http://weforward.cn</url>
 
 	<properties>
@@ -17,8 +17,8 @@
 	</properties>
 
 	<scm>
-		<url>https://github.com/lightsx1/ljh_wf_serve_1.git</url>
-		<tag>https://github.com/lightsx1/ljh_wf_serve_1.git</tag>
+		<url>https://github.com/lightsx1/ljh_wf_serve_demand.git</url>
+		<tag>https://github.com/lightsx1/ljh_wf_serve_demand.git</tag>
 	</scm>
 
 	<dependencies>
@@ -50,7 +50,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>ljh_wf_serve_1</finalName>
+		<finalName>ljh_wf_serve_demand</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

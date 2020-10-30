@@ -12,6 +12,7 @@ import weforward.exception.TagException;
 import weforward.view.DemandAnalysisView;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -181,6 +182,9 @@ public interface Demand {
 
     /** 获得日志*/
     ResultPage<BusinessLog> getLogs();
+
+    /**获得可扭转的状态*/
+    List<String> getStatusCanTurn();
 
 
 }

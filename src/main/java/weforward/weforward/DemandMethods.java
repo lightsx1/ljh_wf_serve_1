@@ -405,6 +405,17 @@ public class DemandMethods implements ExceptionHandler {
         return DemandView.valueOf(demand);
     }
 
+    @KeepServiceOrigin
+    @WeforwardMethod
+    @DocParameter(@DocAttribute(name = "demandId", type = String.class, necessary = true, description = "任务id"))
+    @DocMethod(description = "将任务的预期结束时间清空", index = 23)
+    public List<String> getStatusCanTurnto(FriendlyObject params) throws ApiException, StatusException, DemandException {
+        String id = params.getString("demandId");
+        ValidateUtil.isEmpty(id, "id不能为空");
+        Demand demand = demandService.getDemand(id);
+        return  demand.getStatusCanTurn();
+    }
+
     @Override
     public Throwable exception(Throwable error) {
         if (error instanceof Exception) {

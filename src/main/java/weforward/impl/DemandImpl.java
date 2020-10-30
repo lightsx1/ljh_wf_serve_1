@@ -1,6 +1,7 @@
 package weforward.impl;
 
 import cn.weforward.common.NameItem;
+import cn.weforward.common.NameItems;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
 import cn.weforward.data.annotation.Index;
@@ -15,6 +16,7 @@ import weforward.exception.TagException;
 import weforward.view.DemandAnalysisView;
 
 import javax.annotation.Resource;
+import javax.naming.Name;
 import java.util.*;
 
 public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand {
@@ -77,7 +79,6 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Index
     protected String tagId;
 
-    protected List <String> whichStatusCanTurnto = new ArrayList<>();
 
     protected DemandImpl(DemandDi di) {
         super(di);
@@ -231,6 +232,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
         }
     }
 
+    @Override
     public void disFollow(String follower) throws ApiException {
         if(!this.follower.contains(follower)){
             throw new ApiException(ApiException.CODE_INTERNAL_ERROR,"该用户还没有跟进，不能取消跟进！");
@@ -504,6 +506,69 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
     @Override
     public ResultPage<BusinessLog> getLogs() {
         return getBusinessDi().getLogs(getId());
+    }
+
+    @Override
+    public List <String> getStatusCanTurn(){
+        List <String> result = new ArrayList<>();
+        if(STATUS.get(this.status) == STATUS_EVALUATING){
+            result.add(STATUS_PLANNING.getName());
+            result.add(STATUS_REJECTED.getName());
+        }
+        if(STATUS.get(this.status) == STATUS_PLANNING){
+            result.add(STATUS_ToBeDeveloped.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+        }
+
+        if(STATUS.get(this.status) == STATUS_ToBeDeveloped){
+            result.add(STATUS_DEVELOPING.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+        }
+
+        if(STATUS.get(this.status) == STATUS_DEVELOPING){
+            result.add(STATUS_ToBeTested.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+            return result;
+        }
+
+        if(STATUS.get(this.status) == STATUS_ToBeTested){
+            result.add(STATUS_DEVELOPING.getName());
+            result.add(STATUS_TESTING.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+            return result;
+        }
+
+        if(STATUS.get(this.status) == STATUS_TESTING){
+            result.add(STATUS_DEVELOPING.getName());
+            result.add(STATUS_TESTED.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+            return result;
+        }
+
+        if(STATUS.get(this.status) == STATUS_TESTED){
+            result.add(STATUS_DEVELOPING.getName());
+            result.add(STATUS_ONLINE.getName());
+            result.add(STATUS_REJECTED.getName());
+            result.add(STATUS_HANGED.getName());
+            return result;
+        }
+
+        if(STATUS.get(this.status) == STATUS_HANGED){
+            result.add(STATUS_EVALUATING.getName());
+            result.add(STATUS_DEVELOPING.getName());
+            result.add(STATUS_ToBeTested.getName());
+            result.add(STATUS_TESTED.getName());
+            result.add(STATUS_REJECTED.getName());
+            return result;
+        }
+
+        result.add("保持为"+STATUS.get(this.status).getName());
+        return result;
     }
 
 }
