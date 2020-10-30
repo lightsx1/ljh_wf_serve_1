@@ -26,7 +26,6 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
 
     @Override
     public Demand createDemand(String user, String title, String description, int priority, String charger, Set<String> dealer, Date willingStartTime, Date willingEndTime, String tagId) throws TagException {
-
         if(tagId !=null && tagId != ""){
             getTag(tagId);
         }
@@ -42,7 +41,7 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         }
 
         if(tagId!="" || tagId == null){
-            Tag tag = getTag(tagId);
+            getTag(tagId);
         }
         demand.writeSonLog();
         return new DemandImpl(this, user, fid, title, description, priority, charger, dealer, willingStartTime, willingEndTime);
@@ -275,15 +274,17 @@ public class DemandServiceImpl extends DemandDiImpl implements DemandService {
         String m_charger = demand.getCharger();
 
         Iterator iterator = m_follower.iterator();
+
         if(m_follower.contains(follower)){
             flag = true;
         }
 
-        for (String m_dealer : demand.getDealer()) {
-            if (m_dealer.equals(dealer)) {
-                flag = true;
-            }
+        //找出是否有匹配的处理人
+        if (demand.getDealer().contains(dealer)) {
+            flag = true;
         }
+
+        // 根据不同的条件匹配，找到同时符合所有不为空的条件
         if(!StringUtil.isEmpty(creator) && !StringUtil.isEmpty(follower) && !StringUtil.isEmpty(charger) && !StringUtil.isEmpty(dealer)){
             return m_title.contains(keywords) && m_creator.equals(creator) && m_follower.equals(follower) && m_charger.equals(charger) && flag;
         }

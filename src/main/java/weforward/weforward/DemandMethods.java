@@ -136,7 +136,7 @@ public class DemandMethods implements ExceptionHandler {
         String name = params.getTitle();
         if (!StringUtil.isEmpty(name)) {
             if(name.equals("null")){
-                name = null;
+                name = "";
             }
             demand.setTitle(name);
         }
@@ -149,7 +149,7 @@ public class DemandMethods implements ExceptionHandler {
         String description = params.getDescription();
         if (!StringUtil.isEmpty(description)) {
             if(description.equals("null")){
-                description = null;
+                description = "";
             }
             demand.setDescription(description);
         }
@@ -157,7 +157,7 @@ public class DemandMethods implements ExceptionHandler {
         String charger = params.getCharger();
         if (!StringUtil.isEmpty(charger)) {
             if(charger.equals("null")){
-                charger = null;
+                charger = "";
             }
                 demand.setCharger(charger);
         }
@@ -168,7 +168,7 @@ public class DemandMethods implements ExceptionHandler {
             if (dealer.size() > 0) {
                 Set<String> dealers = new HashSet<>(params.getDealer());
                 if(dealer.get(0).equals("null") && dealer.size() == 1){
-                    dealers = null;
+                    dealers = new HashSet<>();
                 }
                 demand.setDealer(dealers);
             }

@@ -268,6 +268,7 @@ public class DemandImpl  extends AbstractPersistent<DemandDi> implements Demand 
 
     @Override
     public void setWillingEndTime(Date willingEndTime) {
+
         if(this.willingEndTime.equals(willingEndTime)) return;
         getBusinessDi().writeLog(getId(), "修改预期结束时间", "原预期结束时间：  "+this.willingEndTime +"  修改为："+willingEndTime, "");
         this.willingEndTime = willingEndTime;

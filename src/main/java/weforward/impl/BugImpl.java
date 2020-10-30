@@ -3,6 +3,7 @@ package weforward.impl;
 import cn.weforward.common.NameItem;
 import cn.weforward.common.ResultPage;
 import cn.weforward.data.UniteId;
+import cn.weforward.data.annotation.Index;
 import cn.weforward.data.log.BusinessLog;
 import cn.weforward.data.persister.support.AbstractPersistent;
 import cn.weforward.framework.support.Global;
@@ -15,36 +16,48 @@ import java.util.Date;
 
 public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
 
+    /** 任务id*/
+    @Index
     @Resource
     protected String demandId;
 
+    /** 缺陷具体描述*/
     @Resource
     protected String description;
 
+    /** 缺陷严重性*/
     @Resource
     protected String priority;
 
+    /** 缺陷状态*/
     @Resource
     protected int status;
 
+    /** 缺陷是否处理完成，当缺陷状态为已解决、不做修改、无法解决时将状态置为已完成*/
     @Resource
     protected boolean isDealed;
 
+    /** 缺陷测试人*/
     @Resource
     protected String tester;
 
+    /** 缺陷处理人*/
     @Resource
     protected String dealer;
 
+    /** 缺陷跟进人*/
     @Resource
     protected String follower;
 
+    /** 缺陷创建人*/
     @Resource
     protected String creator;
 
+    /** 缺陷版本与平台*/
     @Resource
     protected String version;
 
+    /** 最后一次更新时间，每次更新操作或状态扭转刷新该时间*/
     @Resource
     protected Date lastTime;
 
@@ -112,7 +125,6 @@ public class BugImpl extends AbstractPersistent<DemandDi> implements Bug {
     public boolean isDealed() {
         return isDealed;
     }
-
 
     @Override
     public String getTester() {

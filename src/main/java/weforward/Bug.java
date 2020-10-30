@@ -11,24 +11,34 @@ import java.util.Date;
 
 public interface Bug {
 
+    /** 缺陷状态-待修正*/
     NameItem STATUS_ToBeCorrected = NameItem.valueOf("待修正", 1);
 
+    /** 缺陷状态-待复测*/
     NameItem STATUS_ToBeRested = NameItem.valueOf("待复测", 2);
 
+    /** 缺陷状态-建议不做修改*/
     NameItem STATUS_SUGGEST = NameItem.valueOf("建议不做修改", 3);
 
+    /** 缺陷状态-申请无法解决*/
     NameItem STATUS_APPLY = NameItem.valueOf("申请无法解决", 4);
 
+    /** 缺陷状态-已解决*/
     NameItem STATUS_DONE = NameItem.valueOf("已解决", 5);
 
+    /** 缺陷状态-不做修改*/
     NameItem STATUS_NONE = NameItem.valueOf("不做修改", 6);
 
+    /** 缺陷状态-无法解决*/
     NameItem STATUS_CANT = NameItem.valueOf("无法解决", 7);
 
+    /** 缺陷状态-重新打开*/
     NameItem STATUS_REOPENED = NameItem.valueOf("重新打开", 8);
 
+    /** 缺陷状态-删除*/
     NameItem STATUS_DELETED = NameItem.valueOf("删除", 999);
 
+    /** 缺陷状态集合*/
     NameItems STATUS = NameItems.valueOf(STATUS_ToBeCorrected, STATUS_ToBeRested, STATUS_SUGGEST,
             STATUS_APPLY, STATUS_DONE, STATUS_NONE, STATUS_CANT, STATUS_REOPENED, STATUS_DELETED);
 
